@@ -1,3 +1,6 @@
+
+import javax.swing.JFrame;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -111,17 +114,23 @@ public class Acceuil extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new Produits().setVisible(true);
+        Produits produitsFrame = new Produits();
+        produitsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        produitsFrame.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        new Commandes().setVisible(true);
+        Commandes commandesFrame = new Commandes();
+        commandesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        commandesFrame.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        new Promotions().setVisible(true);
+        Promotions promotionsFrame = new Promotions();
+        promotionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        promotionsFrame.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
