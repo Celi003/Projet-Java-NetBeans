@@ -1,7 +1,4 @@
-import java.net.Socket;
-
 import java.sql.*;
-
 
 public class db_connection {
 
@@ -12,55 +9,44 @@ public class db_connection {
     String url;
     String username;
     String password;
-    Socket client;
 
+    public db_connection(String url, String username, String password) {
   
-  public db_connection(String url, String username, String password) {
-
-      
-  this.url = url;
+        this.url = url;
         this.username = username;
         this.password = password;
      
     }
+    
+    public Connection connexionDatabase() {
 
-   
- public Connection connexionDatabase() {
-
-      
-  try {
+        try {
             Class.forName("com.mysql.jdbc.Driver");
-          
-  connection = DriverManager.getConnection(url, username, password);
-        } catch (Exception e) 
-{System.err.println(e);//
-        }
+            connection = DriverManager.getConnection(url, username, password);
+        } catch (Exception e) {System.err.println(e);}
         return connection;
     }
-
  
    public Connection closeconnexion() {
 
         try {
             connection.close();
-        } catch (Exception e) {System.err.println(e);//
-        }
+        } catch (Exception e) {System.err.println(e);}
         return connection;
     }
 
-    public ResultSet exécutionQuery(String sql) {
+    public ResultSet executionQuery(String sql) {
         connexionDatabase();
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
             System.out.println(sql);
-        } catch (SQLException ex) {System.err.println(ex);//
-        }
+        } catch (SQLException ex) {System.err.println(ex);}
         return resultSet;
     }
 
-    public String exécutionUpdate(String sql) {
+    public String executionUpdate(String sql) {
         connexionDatabase();
         String result = "";
         try {
@@ -75,26 +61,23 @@ public class db_connection {
 
     }
 
-//Fungsi untuk eksekusi query select semua kolom
     public ResultSet querySelectAll(String nomTable) {
 
         connexionDatabase();
         SQL = "SELECT * FROM " + nomTable;
         System.out.println(SQL);
-        return this.exécutionQuery(SQL);
+        return this.executionQuery(SQL);
 
     }
 
-//Overload fungsi untuk eksekusi query select semua kolom dengan where
     public ResultSet querySelectAll(String nomTable, String état) {
 
         connexionDatabase();
         SQL = "SELECT * FROM " + nomTable + " WHERE " + état;
-        return this.exécutionQuery(SQL);
+        return this.executionQuery(SQL);
 
     }
 
-//Fungsi untuk eksekusi query select dengan kolom spesifik
     public ResultSet querySelect(String[] nomColonne, String nomTable) {
 
         connexionDatabase();
@@ -109,11 +92,10 @@ public class db_connection {
         }
 
         SQL += " FROM " + nomTable;
-        return this.exécutionQuery(SQL);
+        return this.executionQuery(SQL);
 
     }
 
-//Overload fungsi untuk eksekusi query select dengan kolom spesifik dengan where
     public ResultSet fcSelectCommand(String[] nomColonne, String nomTable, String état) {
 
         connexionDatabase();
@@ -128,7 +110,7 @@ public class db_connection {
         }
 
         SQL += " FROM " + nomTable + " WHERE " + état;
-        return this.exécutionQuery(SQL);
+        return this.executionQuery(SQL);
 
     }
 
@@ -146,10 +128,9 @@ public class db_connection {
         }
 
         SQL += ")";
-        return this.exécutionUpdate(SQL);
+        return this.executionUpdate(SQL);
 
     }
-//Fungsi eksekusi query insert
 
     public String queryInsert(String nomTable, String[] nomColonne, String[] contenuTableau) {
 
@@ -171,11 +152,10 @@ public class db_connection {
         }
 
         SQL += ")";
-        return this.exécutionUpdate(SQL);
+        return this.executionUpdate(SQL);
 
     }
 
-//Fungsi eksekusi query update
     public String queryUpdate(String nomTable, String[] nomColonne, String[] contenuTableau, String état) {
 
         connexionDatabase();
@@ -190,25 +170,23 @@ public class db_connection {
         }
 
         SQL += " WHERE " + état;
-        return this.exécutionUpdate(SQL);
+        return this.executionUpdate(SQL);
 
     }
 
-//Fungsi eksekusi query delete
     public String queryDelete(String nomtable) {
 
         connexionDatabase();
         SQL = "DELETE FROM " + nomtable;
-        return this.exécutionUpdate(SQL);
+        return this.executionUpdate(SQL);
 
     }
 
-//Overload fungsi eksekusi query delete dengan where
     public String queryDelete(String nomTable, String état) {
 
         connexionDatabase();
         SQL = "DELETE FROM " + nomTable + " WHERE " + état;
-        return this.exécutionUpdate(SQL);
+        return this.executionUpdate(SQL);
 
     }
 }
