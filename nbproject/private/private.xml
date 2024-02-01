@@ -4,10 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Parameter.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Utilisateurs.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Ventes.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Utilisateurs.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Login.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/db_connection.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/TableUtilisateu.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/TableUtilisateur.java</file>
         </group>
     </open-files>

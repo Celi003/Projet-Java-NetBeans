@@ -127,11 +127,11 @@ public class Login extends javax.swing.JFrame {
         catch(SQLException e) {e.printStackTrace();}
         if(username.equals(User.getText()) && psw.equals(Password.getText())){
             if(role.equals("admin")){
-                new Utilisateurs().setVisible(true);
+                new Admin().setVisible(true);
                 this.dispose();
             }
             else{
-                new Ventes().setVisible(true);
+                new Employé().setVisible(true);
                 this.dispose();
             }
         }
