@@ -30,6 +30,10 @@
   System.out.println(db.queryInsert("utilisateurs", colonnes, valeurs));//Ce qui revient a INSERT INTO utilisateurs("nom","prenoms","role","identifiant","mot_de_passe") VALUES("DOE","John","admin","admin","admin")
   Veuillez adaptez le code en fonction des parametres de votre fonctionnalité et surtout lisez et comprenez les méthodes de la db_Connection.
 
+- La barre de navigation pour défiler entre les pages pour les employés a été ajouté uniquement dans le frame Vente et pour l'admin dans le frame Utilisateurs , après avoir définit toutes les actions sur les menuItem de ces deux premiers frames , on pourra copier/coller sur les autres frames , ou voir une autre approche pour switcher entre les frames.
+
+- Pour les tests , faites un clic droit sur le projet puis run , vous serez redirigé vers la page login, entrez identifiant : admin , mot de passe : admin , pour vous connecté en tant qu'administrateur , vous serez redirigé vers la page de gestion des utilisateurs pour les tests , sinon a la fin du projet vous devrez etre redirigé normalement vers la page des alertes de rupture de stock , créez des utilisateurs avec différents droit d'accès et testez les fonctionnalités
+
 # Progression
 
 .Création d'interface pour l'application ✅;
