@@ -6,16 +6,31 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenu7">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="66" green="66" red="0" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Ventes"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem5">
               <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="0" type="rgb"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/img/vente.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Nouvelle Vente"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem6">
               <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="0" type="rgb"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/img/historique.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Historique des ventes"/>
               </Properties>
             </MenuItem>
@@ -23,16 +38,25 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu3">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="66" green="66" red="0" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Aide"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
               <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="0" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Comment &#xe7;&#xe0; marche ?"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
               <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="0" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="A propos"/>
               </Properties>
             </MenuItem>
@@ -43,6 +67,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" value="Caissier"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[810, 600]"/>
     </Property>

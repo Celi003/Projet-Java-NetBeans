@@ -7,12 +7,12 @@
  *
  * @author Thierry APLOGAN
  */
-public class Employé extends javax.swing.JFrame {
+public class Caissier extends javax.swing.JFrame {
 
     /**
      * Creates new form Employe
      */
-    public Employé() {
+    public Caissier() {
         initComponents();
     }
 
@@ -34,23 +34,32 @@ public class Employé extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Caissier");
         setMinimumSize(new java.awt.Dimension(810, 600));
 
+        jMenu7.setForeground(new java.awt.Color(0, 102, 102));
         jMenu7.setText("Ventes");
 
+        jMenuItem5.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/vente.png"))); // NOI18N
         jMenuItem5.setText("Nouvelle Vente");
         jMenu7.add(jMenuItem5);
 
+        jMenuItem6.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/historique.png"))); // NOI18N
         jMenuItem6.setText("Historique des ventes");
         jMenu7.add(jMenuItem6);
 
         jMenuBar1.add(jMenu7);
 
+        jMenu3.setForeground(new java.awt.Color(0, 102, 102));
         jMenu3.setText("Aide");
 
+        jMenuItem1.setForeground(new java.awt.Color(0, 102, 102));
         jMenuItem1.setText("Comment çà marche ?");
         jMenu3.add(jMenuItem1);
 
+        jMenuItem2.setForeground(new java.awt.Color(0, 102, 102));
         jMenuItem2.setText("A propos");
         jMenu3.add(jMenuItem2);
 
@@ -89,21 +98,23 @@ public class Employé extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Employé.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Caissier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Employé.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Caissier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Employé.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Caissier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Employé.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Caissier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Employé().setVisible(true);
+                new Caissier().setVisible(true);
             }
         });
     }

@@ -13,12 +13,13 @@ import javax.swing.event.ListSelectionListener;
 
 
 
-public class Utilisateurs extends javax.swing.JPanel {
+public class Personnel extends javax.swing.JPanel {
 
     db_connection db;
     ResultSet rs = null;
+    String espace = "   ";
     
-    public Utilisateurs() {
+    public Personnel() {
         db = new db_connection(new Parameter().db, new Parameter().nom, new Parameter().pass);
         initComponents();
     }
@@ -41,10 +42,10 @@ public class Utilisateurs extends javax.swing.JPanel {
     public void setList(){
         listModel = new DefaultListModel<>();
         String[] colonnes = {"nom","prenoms"};
-        rs = db.querySelect(colonnes, "utilisateurs");
+        rs = db.querySelect(colonnes, "personnel");
         try{
             while(rs.next()){
-                listModel.addElement(rs.getString("nom")+"   "+rs.getString("prenoms"));
+                listModel.addElement(rs.getString("nom")+ espace +rs.getString("prenoms"));
             }
         }
         catch(SQLException e){
@@ -63,16 +64,20 @@ public class Utilisateurs extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Le(s) prénom(s) de l'utilisateur doit contenir au minimum 2 caractères");
             return false;
         }
-        else if(new String(Password.getPassword()).length()<8 ) {
-            JOptionPane.showMessageDialog(this, "Le mot de passe doit contenir au minimum 8 caractères");
+        else if(new String(Password.getPassword()).length()<5 ) {
+            JOptionPane.showMessageDialog(this, "Le mot de passe doit contenir au minimum 5 caractères");
             return false;
         }
         else if(!new String(Password.getPassword()).equals(new String(Confirmation.getPassword()))) {
             JOptionPane.showMessageDialog(this, "Les deux mots de passe ne correspondent pas .");
             return false;
         }
-        else if(Identifiant.getText().length()<2 ) {
-            JOptionPane.showMessageDialog(this, "L'identifiant de l'utilisateur doit contenir au minimum 2 caractères");
+        else if(Identifiant.getText().length()<5 ) {
+            JOptionPane.showMessageDialog(this, "L'identifiant de l'utilisateur doit contenir au minimum 5 caractères");
+            return false;
+        }
+        else if(InputContact.getText().length()>8 ) {
+            JOptionPane.showMessageDialog(this, "Le contact est censé s'écrire sans espace et doit contenir au maximum 8 caractères");
             return false;
         }
         else{
@@ -91,8 +96,11 @@ public class Utilisateurs extends javax.swing.JPanel {
             InputNom.setVisible(false);
             InputPrenoms.setVisible(false);
             InputRole.setVisible(false);
+            InputContact.setVisible(false);
+            Voir.setVisible(false);
             Nom.setVisible(true);
             Prenoms.setVisible(true);
+            Contact.setVisible(true);
             Role.setVisible(true);
             Modifier.setText("Modifier");
     }
@@ -108,9 +116,16 @@ public class Utilisateurs extends javax.swing.JPanel {
         InputNom.setVisible(!false);
         InputPrenoms.setVisible(!false);
         InputRole.setVisible(!false);
+        InputContact.setVisible(true);
+        InputNom.setText("");
+        InputPrenoms.setText("");
+        InputRole.setSelectedItem("admin");
+        InputContact.setText("");
+        Voir.setVisible(true);
         Nom.setVisible(!true);
         Prenoms.setVisible(!true);
         Role.setVisible(!true);
+        Contact.setVisible(false);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -152,6 +167,13 @@ public class Utilisateurs extends javax.swing.JPanel {
         jPanel8 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         Identifiant = new javax.swing.JTextField();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        InputContact = new javax.swing.JTextField();
+        Contact = new javax.swing.JLabel();
+        Voir = new javax.swing.JCheckBox();
+
+        setMinimumSize(new java.awt.Dimension(726, 700));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 102, 102));
@@ -164,7 +186,12 @@ public class Utilisateurs extends javax.swing.JPanel {
         jLabel3.setText("Rôle              :");
         jPanel3.add(jLabel3);
 
-        InputRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin" , "employé" }));
+        InputRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin" , "caissier" , "aide client" , "agent de nettoyage" , "agent de parking" , "controleur produit" }));
+        InputRole.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InputRoleActionPerformed(evt);
+            }
+        });
         jPanel3.add(InputRole);
 
         Role.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
@@ -195,6 +222,12 @@ public class Utilisateurs extends javax.swing.JPanel {
         jLabel2.setForeground(new java.awt.Color(0, 102, 102));
         jLabel2.setText("Prénoms       :");
         jPanel2.add(jLabel2);
+
+        InputPrenoms.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InputPrenomsActionPerformed(evt);
+            }
+        });
         jPanel2.add(InputPrenoms);
 
         Prenoms.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
@@ -233,14 +266,15 @@ public class Utilisateurs extends javax.swing.JPanel {
                 if (!e.getValueIsAdjusting() && !jList1.isSelectionEmpty()) {
                     showUser();
                     String nom_prenom = jList1.getSelectedValue();
-                    String[] n_p = nom_prenom.split("   ");
-                    String[] colonnes={"nom","prenoms","role"};
-                    rs = db.fcSelectCommand(colonnes, "utilisateurs", "nom='"+n_p[0]+"' and prenoms='"+n_p[1]+"'");
+                    String[] n_p = nom_prenom.split(espace);
+                    String[] colonnes={"nom","prenoms","role","contact"};
+                    rs = db.fcSelectCommand(colonnes, "personnel", "nom='"+n_p[0]+"' and prenoms='"+n_p[1]+"'");
                     try{
                         while(rs.next()){
                             Nom.setText(rs.getString("nom"));
                             Prenoms.setText(rs.getString("prenoms"));
                             Role.setText(rs.getString("role"));
+                            Contact.setText(rs.getString("contact"));
                         }
                     }
                     catch(SQLException ex){
@@ -268,7 +302,7 @@ public class Utilisateurs extends javax.swing.JPanel {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(94, 94, 94)
                         .addComponent(Create)
@@ -336,6 +370,35 @@ public class Utilisateurs extends javax.swing.JPanel {
         jPanel8.add(jLabel6);
         jPanel8.add(Identifiant);
 
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel7.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel7.setText("Contact        :");
+        jPanel6.add(jLabel7);
+
+        InputContact.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InputContactActionPerformed(evt);
+            }
+        });
+        jPanel6.add(InputContact);
+
+        Contact.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
+        Contact.setForeground(new java.awt.Color(0, 102, 102));
+        Contact.setText("Contact");
+        jPanel6.add(Contact);
+        Contact.setVisible(false);
+
+        Voir.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
+        Voir.setForeground(new java.awt.Color(0, 102, 102));
+        Voir.setText("Afficher le mot de passe");
+        Voir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VoirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -346,28 +409,34 @@ public class Utilisateurs extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(Modifier)
-                                .addGap(59, 59, 59)
-                                .addComponent(Creer)
-                                .addGap(51, 51, 51)
-                                .addComponent(Supprimer))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(Modifier)
+                                        .addGap(59, 59, 59)
+                                        .addComponent(Creer)
+                                        .addGap(51, 51, 51)
+                                        .addComponent(Supprimer))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                                        .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(Voir)
+                                .addGap(94, 94, 94))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(40, 40, 40)
                         .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
                         .addComponent(Recherche, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(58, 58, 58)
                         .addComponent(jButton1)))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,13 +447,17 @@ public class Utilisateurs extends javax.swing.JPanel {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46)
+                .addGap(36, 36, 36)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGap(40, 40, 40)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(Voir)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Modifier)
                     .addComponent(Creer)
@@ -423,6 +496,10 @@ public class Utilisateurs extends javax.swing.JPanel {
 
     private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
         showCreateUser();
+        InputNom.setText("");
+        InputPrenoms.setText("");
+        InputRole.setSelectedIndex(0);
+        InputContact.setText("");
     }//GEN-LAST:event_CreateActionPerformed
 
     private void RechercheKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RechercheKeyPressed
@@ -434,33 +511,81 @@ public class Utilisateurs extends javax.swing.JPanel {
             InputNom.setVisible(true);
             InputPrenoms.setVisible(true);
             InputRole.setVisible(true);
+            InputContact.setVisible(true);
+            Voir.setVisible(true);
             jPanel4.setVisible(true);
             jPanel5.setVisible(true);
             jPanel8.setVisible(true);
             InputNom.setText(Nom.getText());
             InputPrenoms.setText(Prenoms.getText());
             InputRole.setSelectedItem(Role.getText());
+            InputContact.setText(Contact.getText());
             Nom.setVisible(false);
             Prenoms.setVisible(false);
             Role.setVisible(false);
+            Contact.setVisible(false);
             Modifier.setText("Enregistrer");
         }
         else{
-            if(valide()){
-                String[] colonnes={"nom","prenoms","role","identifiant","mot_de_passe"};
-                String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),Identifiant.getText(),Confirmation.getText()};
+            if(InputRole.getSelectedItem().toString().equals("admin") || InputRole.getSelectedItem().toString().equals("caissier")){
+                if(valide()){
+                    String[] colonnes={"nom","prenoms","role","contact","identifiant","mot_de_passe"};
+                    String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),InputContact.getText(),Identifiant.getText(),Confirmation.getText()};
+                    String etat = "nom='"+Nom.getText()+"' and prenoms='"+Prenoms.getText()+"'";
+                    System.out.println(db.queryUpdate("personnel", colonnes, valeurs, etat));
+                    setList();
+                    showUser();
+                    Nom.setText(InputNom.getText());
+                    Prenoms.setText(InputPrenoms.getText());
+                    Role.setText(InputRole.getSelectedItem().toString());
+                    Contact.setText(InputContact.getText());
+                }
+            }
+            else{
+                String[] colonnes={"nom","prenoms","role","contact"};
+                String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),InputContact.getText()};
                 String etat = "nom='"+Nom.getText()+"' and prenoms='"+Prenoms.getText()+"'";
-                System.out.println(db.queryUpdate("utilisateurs", colonnes, valeurs, etat));
+                System.out.println(db.queryUpdate("personnel", colonnes, valeurs, etat));
+                System.out.println(db.executionUpdate("UPDATE personnel SET identifiant = NULL , mot_de_passe = NULL WHERE "+etat));
+                setList();
                 showUser();
+                Nom.setText(InputNom.getText());
+                Prenoms.setText(InputPrenoms.getText());
+                Role.setText(InputRole.getSelectedItem().toString());
+                Contact.setText(InputContact.getText());
             }
         }
     }//GEN-LAST:event_ModifierActionPerformed
 
     private void CreerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreerActionPerformed
-        if(valide()){
-            String[] colonnes={"nom","prenoms","role","identifiant","mot_de_passe"};
-            String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),Identifiant.getText(),Password.getText()};
-            System.out.println(db.queryInsert("utilisateurs", colonnes, valeurs));
+        if(InputRole.getSelectedItem().toString().equals("admin") || InputRole.getSelectedItem().toString().equals("caissier")){
+            if(valide()){
+                String[] colonnes={"nom","prenoms","role","contact","identifiant","mot_de_passe"};
+                String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),InputContact.getText(),Identifiant.getText(),Password.getText()};
+                ListModel<String> model = jList1.getModel();
+                for(int i=0 ; i<model.getSize() ; i++){
+                    String elm = model.getElementAt(i);
+                    if(elm.equals(InputNom.getText() + espace + InputPrenoms.getText())){
+                        JOptionPane.showMessageDialog(this, "Un utilisateur possède déja ce nom et ce(s) prénom(s) , veuillez ajouter une petite modification");
+                        return;
+                    }
+                }
+                System.out.println(db.queryInsert("personnel", colonnes, valeurs));
+                setList();
+            }
+        }
+        else{
+            String[] colonnes={"nom","prenoms","role","contact"};
+            String[] valeurs={InputNom.getText(),InputPrenoms.getText(),InputRole.getSelectedItem().toString(),InputContact.getText()};
+            ListModel<String> model = jList1.getModel();
+            for(int i=0 ; i<model.getSize() ; i++){
+                String elm = model.getElementAt(i);
+                if(elm.equals(InputNom.getText() + espace + InputPrenoms.getText())){
+                    JOptionPane.showMessageDialog(this, "Un utilisateur possède déja ce nom et ce(s) prénom(s) , veuillez ajouter une petite modification");
+                    return;
+                }
+            }
+            System.out.println(db.queryInsert("personnel", colonnes, valeurs));
             setList();
         }
     }//GEN-LAST:event_CreerActionPerformed
@@ -469,7 +594,7 @@ public class Utilisateurs extends javax.swing.JPanel {
         String etat = "nom='" + Nom.getText()+"' and prenoms='" + Prenoms.getText() +"'";
         if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cet utilisateur ??",
             "Suppression d'utilisateur", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
-        System.out.println(db.queryDelete("utilisateurs", etat));
+        System.out.println(db.queryDelete("personnel", etat));
         setList();
         showCreateUser();
         }
@@ -483,12 +608,46 @@ public class Utilisateurs extends javax.swing.JPanel {
         RechercheModifie();
     }//GEN-LAST:event_RechercheActionPerformed
 
+    private void InputContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InputContactActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_InputContactActionPerformed
+
+    private void InputPrenomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InputPrenomsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_InputPrenomsActionPerformed
+
+    private void InputRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InputRoleActionPerformed
+        if(InputRole.getSelectedItem().toString().equals("admin") || InputRole.getSelectedItem().toString().equals("caissier")){
+            jPanel8.setVisible(true);
+            jPanel4.setVisible(true);
+            jPanel5.setVisible(true);
+            Voir.setVisible(true);
+        }
+        else{
+            jPanel8.setVisible(false);
+            jPanel4.setVisible(false);
+            jPanel5.setVisible(false);
+            Voir.setVisible(false);
+        }
+    }//GEN-LAST:event_InputRoleActionPerformed
+
+    private void VoirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoirActionPerformed
+        if(Voir.isSelected()){
+            Password.setEchoChar((char) 0);
+        }
+        else{
+            Password.setEchoChar('*');
+        }
+    }//GEN-LAST:event_VoirActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPasswordField Confirmation;
+    private javax.swing.JLabel Contact;
     private javax.swing.JButton Create;
     private javax.swing.JButton Creer;
     private javax.swing.JTextField Identifiant;
+    private javax.swing.JTextField InputContact;
     private javax.swing.JTextField InputNom;
     private javax.swing.JTextField InputPrenoms;
     private javax.swing.JComboBox<String> InputRole;
@@ -499,6 +658,7 @@ public class Utilisateurs extends javax.swing.JPanel {
     private javax.swing.JTextField Recherche;
     private javax.swing.JLabel Role;
     private javax.swing.JButton Supprimer;
+    private javax.swing.JCheckBox Voir;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -506,6 +666,7 @@ public class Utilisateurs extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
@@ -513,6 +674,7 @@ public class Utilisateurs extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;

@@ -1,14 +1,14 @@
 import java.sql.*;
 
-public class TableUtilisateur extends javax.swing.JPanel {
+public class TablePersonnel extends javax.swing.JPanel {
 
     db_connection db;
     ResultSet rs = null;
     
-    public TableUtilisateur() {
+    public TablePersonnel() {
         initComponents();
         db = new db_connection(new Parameter().db, new Parameter().nom, new Parameter().pass);
-        rs = db.querySelectAll("utilisateurs");
+        rs = db.querySelectAll("personnel");
         utilisateurs.setModel(new ResultSetTableModel(rs));
     }
 
@@ -28,13 +28,13 @@ public class TableUtilisateur extends javax.swing.JPanel {
 
         utilisateurs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "id", "nom", "prenoms", "role", "identifiant", "mot_de_passe"
+                "id", "nom", "prenoms", "role", "contact", "identifiant", "mot_de_passe"
             }
         ));
         jScrollPane1.setViewportView(utilisateurs);

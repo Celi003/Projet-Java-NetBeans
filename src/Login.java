@@ -36,7 +36,7 @@ public class Login extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("SuperMarket");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo.png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 102, 102));
@@ -70,14 +70,14 @@ public class Login extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(User)
-                            .addComponent(Password, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)))
+                            .addComponent(Password)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(108, 108, 108)
                         .addComponent(Login)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(103, 103, 103)
+                .addGap(123, 123, 123)
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -86,7 +86,7 @@ public class Login extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(User, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -115,7 +115,7 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginActionPerformed
-        rs = db.querySelectAll("utilisateurs","identifiant='" + User.getText() + "' and mot_de_passe='" + Password.getText()+"'" );
+        rs = db.querySelectAll("personnel","identifiant='" + User.getText() + "' and mot_de_passe='" + Password.getText()+"'" );
         String username="",psw="",role="";
         try{
             while(rs.next()){
@@ -131,7 +131,7 @@ public class Login extends javax.swing.JFrame {
                 this.dispose();
             }
             else{
-                new Employé().setVisible(true);
+                new Caissier().setVisible(true);
                 this.dispose();
             }
         }

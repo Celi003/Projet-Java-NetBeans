@@ -2,7 +2,7 @@
 
 # Dépendances
 
-- Le fichier 'gestion.sql' contient les informations de création de la base de donnée , aprèsavoire créé la base de données avec le nom 'gestion' dans phpMyAdmin dans votre navigateur , vous allez dans l'éditeur de requête sql pour coller les requêtes du fichier 'gestion.sql' afin que chaque contributeur ait une même structure de base de données;
+- Le fichier 'gestion_supermarche.sql' contient les informations de création de la base de donnée , après avoir créé la base de données avec le nom 'gestion_supermarche' dans phpMyAdmin dans votre navigateur , vous allez importer la base de données ou aller dans l'éditeur de requête sql pour coller les requêtes du fichier 'gestion.sql' afin que chaque contributeur ait une même structure de base de données;
 
 - Le fichier /src/Parameter.java/ à été ajouté au .gitignore parceque les paramètres diffèrent de chaque ordinateurs et utilisateurs , donc assurez-vous de bien mettre le mot de passe d'accès à votre phpMyAdmin pour la variable pass et de changer le numéro de port dans la variable db s'il n'est pas 3306.
 

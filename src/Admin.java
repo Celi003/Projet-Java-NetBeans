@@ -13,8 +13,8 @@ public class Admin extends javax.swing.JFrame {
         initComponents();
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        TableUtilisateur tableUtilisateu = new TableUtilisateur();
-        Utilisateurs utilisateur = new Utilisateurs();
+        TablePersonnel tableUtilisateu = new TablePersonnel();
+        Personnel utilisateur = new Personnel();
         Commandes commandes = new Commandes();
         Fournisseurs fournisseurs = new Fournisseurs();
         Produits produits = new Produits();
@@ -60,21 +60,26 @@ public class Admin extends javax.swing.JFrame {
         jMenu8 = new javax.swing.JMenu();
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
-        jMenuItem11 = new javax.swing.JMenuItem();
-        jMenuItem12 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenuItem13 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(810, 600));
+        setTitle("Administrateur");
+        setMinimumSize(new java.awt.Dimension(810, 700));
 
+        jMenuBar1.setForeground(new java.awt.Color(0, 102, 102));
+
+        jMenu1.setForeground(new java.awt.Color(0, 102, 102));
         jMenu1.setText("Produits");
 
+        jMenuItem1.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/table.png"))); // NOI18N
         jMenuItem1.setText("Table des produits");
         jMenu1.add(jMenuItem1);
 
+        jMenuItem2.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/produits.png"))); // NOI18N
         jMenuItem2.setText("Gestion des produits");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -83,16 +88,23 @@ public class Admin extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem2);
 
+        jMenuItem6.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/historique.png"))); // NOI18N
         jMenuItem6.setText("Historique de vente des produits");
         jMenu1.add(jMenuItem6);
 
         jMenuBar1.add(jMenu1);
 
+        jMenu2.setForeground(new java.awt.Color(0, 102, 102));
         jMenu2.setText("Catégories");
 
+        jMenuItem3.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/table.png"))); // NOI18N
         jMenuItem3.setText("Table des catégories");
         jMenu2.add(jMenuItem3);
 
+        jMenuItem4.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/categorie.png"))); // NOI18N
         jMenuItem4.setText("Gestion des catégories");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,9 +115,12 @@ public class Admin extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setForeground(new java.awt.Color(0, 102, 102));
         jMenu3.setText("Commandes");
 
-        jMenuItem7.setText("Gestion des commandes");
+        jMenuItem7.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/commande.png"))); // NOI18N
+        jMenuItem7.setText("nouvelles commandes");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
@@ -113,14 +128,19 @@ public class Admin extends javax.swing.JFrame {
         });
         jMenu3.add(jMenuItem7);
 
+        jMenuItem8.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/historique.png"))); // NOI18N
         jMenuItem8.setText("Historique des commandes");
         jMenu3.add(jMenuItem8);
 
         jMenuBar1.add(jMenu3);
 
-        jMenu4.setText("Utilisateurs");
+        jMenu4.setForeground(new java.awt.Color(0, 102, 102));
+        jMenu4.setText("Personnel");
 
-        ItemTableUtilisateur.setText("Table des utilisateurs");
+        ItemTableUtilisateur.setForeground(new java.awt.Color(0, 102, 102));
+        ItemTableUtilisateur.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/table.png"))); // NOI18N
+        ItemTableUtilisateur.setText("Table du personnel");
         jMenu4.add(ItemTableUtilisateur);
         ItemTableUtilisateur.addActionListener(new ActionListener() {
             @Override
@@ -129,7 +149,9 @@ public class Admin extends javax.swing.JFrame {
             }
         });
 
-        ItemUtilisateurs.setText("Gestion des utilisateurs");
+        ItemUtilisateurs.setForeground(new java.awt.Color(0, 102, 102));
+        ItemUtilisateurs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/personnel.png"))); // NOI18N
+        ItemUtilisateurs.setText("Gestion du personnel");
         jMenu4.add(ItemUtilisateurs);
         ItemUtilisateurs.addActionListener(new ActionListener() {
             @Override
@@ -140,11 +162,16 @@ public class Admin extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu4);
 
+        jMenu8.setForeground(new java.awt.Color(0, 102, 102));
         jMenu8.setText("Fournisseurs");
 
+        jMenuItem9.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/table.png"))); // NOI18N
         jMenuItem9.setText("Table des fournisseurs");
         jMenu8.add(jMenuItem9);
 
+        jMenuItem10.setForeground(new java.awt.Color(0, 102, 102));
+        jMenuItem10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fournisseur.png"))); // NOI18N
         jMenuItem10.setText("Gestion des fournisseurs");
         jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,26 +182,14 @@ public class Admin extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu8);
 
-        jMenu6.setText("Promotions");
-
-        jMenuItem11.setText("Nouvelle promotion");
-        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem11ActionPerformed(evt);
-            }
-        });
-        jMenu6.add(jMenuItem11);
-
-        jMenuItem12.setText("Historique des promotions");
-        jMenu6.add(jMenuItem12);
-
-        jMenuBar1.add(jMenu6);
-
+        jMenu5.setForeground(new java.awt.Color(0, 102, 102));
         jMenu5.setText("Aide");
 
+        jMenuItem13.setForeground(new java.awt.Color(0, 102, 102));
         jMenuItem13.setText("Comment çà marche ?");
         jMenu5.add(jMenuItem13);
 
+        jMenuItem5.setForeground(new java.awt.Color(0, 102, 102));
         jMenuItem5.setText("A propos");
         jMenu5.add(jMenuItem5);
 
@@ -201,10 +216,6 @@ public class Admin extends javax.swing.JFrame {
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         switchPanel("Fournisseurs");
     }//GEN-LAST:event_jMenuItem10ActionPerformed
-
-    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        switchPanel("Promotions");
-    }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,13 +260,10 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
-    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem11;
-    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
