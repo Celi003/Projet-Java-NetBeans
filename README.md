@@ -43,6 +43,6 @@
 .Gestion des catégories de produits(facultatif);
 .Gestion des ventes;
 .Gestion des commandes;
-.Gestion des fournisseurs;
+.Gestion des fournisseurs ✅;
 .Système de suivi des ventes(facultatif);
 .Gestion des promotions;

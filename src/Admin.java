@@ -14,6 +14,7 @@ public class Admin extends javax.swing.JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         TablePersonnel tableUtilisateu = new TablePersonnel();
+        TableFournisseurs tableFournisseurs = new TableFournisseurs();
         Personnel utilisateur = new Personnel();
         Commandes commandes = new Commandes();
         Fournisseurs fournisseurs = new Fournisseurs();
@@ -27,6 +28,7 @@ public class Admin extends javax.swing.JFrame {
         cardPanel.add(produits,"Produits");
         cardPanel.add(promotions,"Promotions");
         cardPanel.add(ventes,"Ventes");
+        cardPanel.add(tableFournisseurs,"TableFournisseurs");
         getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
@@ -168,6 +170,11 @@ public class Admin extends javax.swing.JFrame {
         jMenuItem9.setForeground(new java.awt.Color(0, 102, 102));
         jMenuItem9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/table.png"))); // NOI18N
         jMenuItem9.setText("Table des fournisseurs");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
         jMenu8.add(jMenuItem9);
 
         jMenuItem10.setForeground(new java.awt.Color(0, 102, 102));
@@ -216,6 +223,10 @@ public class Admin extends javax.swing.JFrame {
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         switchPanel("Fournisseurs");
     }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        switchPanel("TableFournisseurs");
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     /**
      * @param args the command line arguments
