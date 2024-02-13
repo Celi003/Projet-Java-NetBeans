@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3308
--- Généré le : lun. 05 fév. 2024 à 02:44
+-- Généré le : mar. 13 fév. 2024 à 22:39
 -- Version du serveur : 8.0.31
 -- Version de PHP : 8.0.26
 
@@ -29,11 +29,19 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(30) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `en_promotion` tinyint NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `categories`
+--
+
+INSERT INTO `categories` (`id`, `nom`, `description`, `en_promotion`) VALUES
+(1, 'Test', 'test', 0);
 
 -- --------------------------------------------------------
 
@@ -44,12 +52,12 @@ CREATE TABLE IF NOT EXISTS `categories` (
 DROP TABLE IF EXISTS `commandes`;
 CREATE TABLE IF NOT EXISTS `commandes` (
   `date_commande` date NOT NULL,
-  `code_produit` int NOT NULL,
+  `code_produit` varchar(15) NOT NULL,
   `quantite` int NOT NULL,
-  `id_fournisseur` int NOT NULL,
+  `code_fournisseur` varchar(15) NOT NULL,
   `date_reception` date DEFAULT NULL,
-  KEY `code_produit` (`code_produit`),
-  KEY `id_fournisseur` (`id_fournisseur`)
+  KEY `code_fournisseur` (`code_fournisseur`),
+  KEY `code_produit` (`code_produit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -60,11 +68,19 @@ CREATE TABLE IF NOT EXISTS `commandes` (
 
 DROP TABLE IF EXISTS `fournisseurs`;
 CREATE TABLE IF NOT EXISTS `fournisseurs` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom | entreprise` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `code` varchar(15) NOT NULL,
+  `nom_ou_entreprise` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `contact` varchar(8) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `fournisseurs`
+--
+
+INSERT INTO `fournisseurs` (`code`, `nom_ou_entreprise`, `contact`) VALUES
+('F2', 'Lenovo', '00000000'),
+('F8', 'Erevan', '00000000');
 
 -- --------------------------------------------------------
 
@@ -82,14 +98,17 @@ CREATE TABLE IF NOT EXISTS `personnel` (
   `identifiant` varchar(30) DEFAULT NULL,
   `mot_de_passe` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `personnel`
 --
 
 INSERT INTO `personnel` (`id`, `nom`, `prenoms`, `role`, `contact`, `identifiant`, `mot_de_passe`) VALUES
-(1, 'ADMIN', 'Admin', 'admin', '0', 'admin', 'admin');
+(1, 'ADMIN', 'Admin', 'admin', '0', 'admin', 'admin'),
+(2, 'CAISSIER', 'Caissier', 'caissier', '00000000', 'caissier', 'caissier'),
+(5, 'ABOBO', 'Thiiery', 'agent de nettoyage', '00586175', NULL, NULL),
+(6, 'xx', 'yy', 'agent de parking', '12345678', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -99,15 +118,41 @@ INSERT INTO `personnel` (`id`, `nom`, `prenoms`, `role`, `contact`, `identifiant
 
 DROP TABLE IF EXISTS `produits`;
 CREATE TABLE IF NOT EXISTS `produits` (
-  `code_produit` int NOT NULL,
+  `code` varchar(15) NOT NULL,
   `nom` varchar(100) NOT NULL,
   `prix` decimal(10,0) NOT NULL,
   `date_peremption` date NOT NULL,
+  `en_promotion` tinyint(1) NOT NULL,
   `quantite_dispo` int NOT NULL,
   `id_categorie` int NOT NULL,
-  PRIMARY KEY (`code_produit`),
+  PRIMARY KEY (`code`),
   KEY `id_categorie` (`id_categorie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `produits`
+--
+
+INSERT INTO `produits` (`code`, `nom`, `prix`, `date_peremption`, `en_promotion`, `quantite_dispo`, `id_categorie`) VALUES
+('x', 'x', '1000', '2024-02-01', 0, 5, 1),
+('y', 'y', '1000', '2024-02-14', 0, 10, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `promotions`
+--
+
+DROP TABLE IF EXISTS `promotions`;
+CREATE TABLE IF NOT EXISTS `promotions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(30) NOT NULL,
+  `reduction` decimal(10,0) NOT NULL,
+  `date_debut` date NOT NULL,
+  `date_fin` date NOT NULL,
+  `tous_produits` tinyint NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -117,15 +162,24 @@ CREATE TABLE IF NOT EXISTS `produits` (
 
 DROP TABLE IF EXISTS `ventes`;
 CREATE TABLE IF NOT EXISTS `ventes` (
-  `n°vente` int NOT NULL AUTO_INCREMENT,
+  `n_vente` int NOT NULL AUTO_INCREMENT,
   `produits` text NOT NULL,
   `cout` int NOT NULL,
   `montant_recu` int NOT NULL,
-  `date` date NOT NULL,
+  `monnaie` int NOT NULL,
+  `moyen_paiement` varchar(15) NOT NULL,
+  `date` datetime NOT NULL,
   `id_caissier` int NOT NULL,
-  PRIMARY KEY (`n°vente`),
+  PRIMARY KEY (`n_vente`),
   KEY `id_caissier` (`id_caissier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `ventes`
+--
+
+INSERT INTO `ventes` (`n_vente`, `produits`, `cout`, `montant_recu`, `monnaie`, `moyen_paiement`, `date`, `id_caissier`) VALUES
+(2, '{x,1,10,10}', 10, 10, 0, 'ESPECE', '2024-02-12 01:39:49', 2);
 
 --
 -- Contraintes pour les tables déchargées
@@ -135,8 +189,8 @@ CREATE TABLE IF NOT EXISTS `ventes` (
 -- Contraintes pour la table `commandes`
 --
 ALTER TABLE `commandes`
-  ADD CONSTRAINT `commandes_ibfk_1` FOREIGN KEY (`code_produit`) REFERENCES `produits` (`code_produit`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `commandes_ibfk_2` FOREIGN KEY (`id_fournisseur`) REFERENCES `fournisseurs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `commandes_ibfk_2` FOREIGN KEY (`code_fournisseur`) REFERENCES `fournisseurs` (`code`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `commandes_ibfk_3` FOREIGN KEY (`code_produit`) REFERENCES `produits` (`code`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Contraintes pour la table `produits`

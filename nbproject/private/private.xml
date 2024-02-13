@@ -3,11 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/db_connection.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/ResultSetTableModel.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Fournisseurs.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Personnel.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Ventes.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Produits.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Historique.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/Login.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Promotion.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Categorie.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Personnel.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Admin.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Fournisseurs.java</file>
         </group>
     </open-files>
 </project-private>

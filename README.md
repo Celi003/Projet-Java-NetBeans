@@ -39,10 +39,10 @@
 .Création d'interface pour l'application ✅;
 .Page login ✅;
 .Gestion des utilisateurs ✅;
-.Gestion des produits;
-.Gestion des catégories de produits(facultatif);
-.Gestion des ventes;
-.Gestion des commandes;
+.Gestion des catégories de produits(facultatif);✅
+.Gestion des ventes;✅
 .Gestion des fournisseurs ✅;
-.Système de suivi des ventes(facultatif);
-.Gestion des promotions;
+.Système de suivi des ventes(facultatif);✅
+.Gestion des promotions;✅
+.Gestion des produits;
+.Gestion des commandes;
