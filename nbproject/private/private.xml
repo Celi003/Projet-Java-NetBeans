@@ -3,11 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Ventes.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Produits.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/Parameter.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/db_connection.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Historique.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/Login.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/Accueil.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Caissier.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Promotion.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Caissier/Ventes.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Commande.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Produits.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Main/Login.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Categorie.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Personnel.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Projet-Java-NetBeans/src/Admin/Admin.java</file>

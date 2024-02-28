@@ -1,7 +1,6 @@
 package Admin;
 
 import Main.Parameter;
-import Main.ResultSetTableModel;
 import Main.db_connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.table.AbstractTableModel;
 
 public class Promotion extends javax.swing.JPanel {
 
@@ -24,18 +24,33 @@ public class Promotion extends javax.swing.JPanel {
     public Promotion() {
         db = new db_connection(new Parameter().db, new Parameter().nom, new Parameter().pass);
         initComponents();
-        setTable();
         if(valid()!=0){
             delPromotion();
             setPromotion();
         }
-        else{
-            delProductPromo();
-        }
         setTable();
+    }
+    
+    public boolean validInput(){
+        if(Nom.getText().length()<2 ){
+            JOptionPane.showMessageDialog(this, "Le nom de la promotion doit contenir au minimum 2 caractères");
+            return false;
+        }
+        String fin = Year.getSelectedItem().toString()+"-"+Month.getSelectedItem().toString()+"-"+Day.getSelectedItem().toString();
+        try {
+            Date date_fin = dateFormat.parse(fin);
+            if(date_fin.before(new Date())){
+                JOptionPane.showMessageDialog(this, "La date de fin de la promotion ne doit pas être avant aujourd'hui");
+                return false;
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return true;
     }
 
     public void setTable(){
+        VerifyAll();
         rs = db.querySelectAll("promotions");
         promos.setModel(new ResultSetTableModel(rs));
     }
@@ -55,7 +70,7 @@ public class Promotion extends javax.swing.JPanel {
                     Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+            db.closeconnexion();
         } catch (SQLException ex) {
             Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,7 +86,7 @@ public class Promotion extends javax.swing.JPanel {
                 while(rs.next()){
                     reduction = Float.parseFloat(rs.getString("reduction"));
                 }
-                rs = db.querySelectAll("produits", "en_promotion=1");
+                rs = db.querySelectAll("produits", "id_promotion IS NOT NULL");
                 String[] colonnes = {"prix"};
                 while(rs.next()){
                     int prix = Integer.parseInt(rs.getString("prix"));
@@ -94,11 +109,11 @@ public class Promotion extends javax.swing.JPanel {
                 while(rs.next()){
                     reduction = Float.parseFloat(rs.getString("reduction"));
                 }
-                rs = db.querySelectAll("produits", "en_promotion=1");
+                rs = db.querySelectAll("produits", "id_promotion IS NOT NULL");
                 String[] colonnes = {"prix"};
                 while(rs.next()){
                     int prix = Integer.parseInt(rs.getString("prix"));
-                    new_price = prix + (prix*reduction)/100;
+                    new_price = prix / (1-(reduction/100));
                     String[] valeurs = {Integer.toString(Math.round(new_price))};
                     System.out.println(db.queryUpdate("produits", colonnes, valeurs, "code='"+rs.getString("code")+"'"));
                 }
@@ -108,39 +123,23 @@ public class Promotion extends javax.swing.JPanel {
         }
     }
     
-    public void delProductPromo(){
-        float reduction =0,new_price=0;
-        if(valid()==0){
-            Date lastpromodate=null;
-            try {
-                lastpromodate = dateFormat.parse("2000-01-01");
-            } catch (ParseException ex) {
-                Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            rs = db.querySelectAll("promotions");
+    public void VerifyAll(){
+        if(valid()!=0){
+            int id = valid();
+            boolean tout = false;
+            rs = db.querySelectAll("produits");
             try {
                 while(rs.next()){
-                    try {
-                        if(dateFormat.parse(rs.getString("date_fin")).after(lastpromodate)){
-                            lastpromodate = dateFormat.parse(rs.getString("date_fin"));
-                            reduction = Float.parseFloat(rs.getString("id"));
-                        }
-                    } catch (ParseException ex) {
-                        Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
+                    if(rs.getInt("id_promotion")!=id){
+                        System.out.println(db.executionUpdate("UPDATE promotions SET tous_produits=0 WHERE id="+Integer.toString(id)));
+                        return;
+                    }
+                    else{
+                        tout = true;
                     }
                 }
-                rs = db.querySelectAll("produits", "en_promotion=1");
-                String[] colonnes = {"prix","en_promotion"};
-                while(rs.next()){
-                    int prix = Integer.parseInt(rs.getString("prix"));
-                    new_price = prix + (prix*reduction)/100;
-                    String[] valeurs = {Integer.toString(Math.round(new_price)),"0"};
-                    System.out.println(db.queryUpdate("produits", colonnes, valeurs, "code='"+rs.getString("code")+"'"));
-                }
-                rs = db.querySelectAll("categories", "en_promotion=1");
-                String[] cols = {"en_promotion"},vals = {"0"};
-                while(rs.next()){
-                    System.out.println(db.queryUpdate("categories", cols, vals, "id='"+rs.getString("id")+"'"));
+                if(tout){
+                    System.out.println(db.executionUpdate("UPDATE promotions SET tous_produits=1 WHERE id="+Integer.toString(id)));
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
@@ -225,7 +224,7 @@ public class Promotion extends javax.swing.JPanel {
         date_debut.add(jLabel11);
 
         Debut.setFont(new java.awt.Font("Segoe UI Emoji", 3, 14)); // NOI18N
-        Debut.setForeground(new java.awt.Color(255, 0, 102));
+        Debut.setForeground(new java.awt.Color(0, 102, 102));
         Debut.setText("Date de début  ");
         date_debut.add(Debut);
 
@@ -272,6 +271,7 @@ public class Promotion extends javax.swing.JPanel {
         jLabel7.setText("Y : ");
         PanelDate.add(jLabel7);
 
+        Year.setForeground(new java.awt.Color(0, 102, 102));
         Year.setModel(new javax.swing.DefaultComboBoxModel<>(new Integer[] {}));
         PanelDate.add(Year);
         int annee = currentDate.getYear();
@@ -284,6 +284,7 @@ public class Promotion extends javax.swing.JPanel {
         jLabel12.setText("M: ");
         PanelDate.add(jLabel12);
 
+        Month.setForeground(new java.awt.Color(0, 102, 102));
         Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
         PanelDate.add(Month);
         for(int i = 1 ; i<=12 ; i++){
@@ -300,6 +301,7 @@ public class Promotion extends javax.swing.JPanel {
         jLabel13.setText("D: ");
         PanelDate.add(jLabel13);
 
+        Day.setForeground(new java.awt.Color(0, 102, 102));
         Day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
         PanelDate.add(Day);
         for(int i = 1 ; i<=31 ; i++){
@@ -327,6 +329,8 @@ public class Promotion extends javax.swing.JPanel {
         jLabel5.setForeground(new java.awt.Color(255, 0, 102));
         jLabel5.setText("          Nom                          : ");
         jPanel2.add(jLabel5);
+
+        Nom.setForeground(new java.awt.Color(0, 102, 102));
         jPanel2.add(Nom);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -419,6 +423,7 @@ public class Promotion extends javax.swing.JPanel {
         jPanel5.setBackground(new java.awt.Color(255, 0, 102));
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
+        promos.setForeground(new java.awt.Color(0, 102, 102));
         promos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -489,29 +494,27 @@ public class Promotion extends javax.swing.JPanel {
 
     private void AjouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjouterActionPerformed
         if(valid()==0){
-            if(Nom.getText().equals("")){
-                JOptionPane.showMessageDialog(this, "Veuillez entrer le nom de la promotion");
-                return ;
+            if(validInput()){
+                currentDate = LocalDate.now();
+                String date_fin = Year.getSelectedItem().toString()+"-"+Month.getSelectedItem().toString()+"-"+Day.getSelectedItem().toString();
+                String[] colonnes = {"nom","reduction","date_debut","date_fin","tous_produits"};
+                if(All.isSelected()){
+                    String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),currentDate.toString(),date_fin,"1"};
+                    System.out.println(db.queryInsert("promotions",colonnes, valeurs));
+                    System.out.println(db.executionUpdate("UPDATE produits SET id_promotion="+Integer.toString(valid())));
+                }
+                else{
+                    String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),currentDate.toString(),date_fin,"0"};
+                    System.out.println(db.queryInsert("promotions",colonnes, valeurs));
+                    System.out.println(db.executionUpdate("UPDATE produits SET id_promotion=NULL"));
+                }
+                setTable();
+                setPromotion();
+                CreatePromo();
             }
-            currentDate = LocalDate.now();
-            String date_fin = Year.getSelectedItem().toString()+"-"+Month.getSelectedItem().toString()+"-"+Day.getSelectedItem().toString();
-            String[] colonnes = {"nom","reduction","date_debut","date_fin","tous_produits"};
-            if(All.isSelected()){
-                System.out.println(db.executionUpdate("UPDATE produits SET en_promotion=1"));
-                String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),currentDate.toString(),date_fin,"1"};
-                System.out.println(db.queryInsert("promotions",colonnes, valeurs));
-            }
-            else{
-                System.out.println(db.executionUpdate("UPDATE produits SET en_promotion=0"));
-                String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),currentDate.toString(),date_fin,"0"};
-                System.out.println(db.queryInsert("promotions",colonnes, valeurs));
-            }
-            setTable();
-            setPromotion();
-            CreatePromo();
         }
         else{
-            JOptionPane.showMessageDialog(this, "Une promotion est déjà en cours", "Ajout de promo impossible", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Une promotion est déjà en cours , veuillez la supprimer d'abord", "Ajout de promo impossible", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_AjouterActionPerformed
 
@@ -519,22 +522,7 @@ public class Promotion extends javax.swing.JPanel {
         int i = promos.getSelectedRow();
         String fin = promos.getValueAt(i, 4).toString();
         String[] y_m_d = fin.split("-");
-        Year.setSelectedItem(Integer.parseInt(y_m_d[0]));Month.setSelectedItem(Integer.parseInt(y_m_d[1]));Day.setSelectedItem(Integer.parseInt(y_m_d[2]));
-        try {
-            Date date_fin = dateFormat.parse(fin);
-            if(date_fin.before(new Date())){
-                Year.setEnabled(false);
-                Month.setEnabled(false);
-                Day.setEnabled(false);
-                Ajouter.setVisible(!true);
-                Modifier.setVisible(!true);
-                Supprimer.setVisible(!true);
-                Create.setVisible(true);
-                return;
-            }
-        } catch (ParseException ex) {
-            Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Year.setSelectedItem(Integer.parseInt(y_m_d[0]));Month.setSelectedItem(y_m_d[1]);Day.setSelectedItem(y_m_d[2]);
         Nom.setText((String) promos.getValueAt(i, 1));
         Reduction.setValue(Float.parseFloat(promos.getValueAt(i, 2).toString()));
         date_debut.setVisible(true);
@@ -549,40 +537,72 @@ public class Promotion extends javax.swing.JPanel {
         Modifier.setVisible(true);
         Supprimer.setVisible(true);
         Create.setVisible(true);
+        try {
+            Date date_fin = dateFormat.parse(fin);
+            if(date_fin.before(new Date())){
+                Year.setEnabled(false);
+                Month.setEnabled(false);
+                Day.setEnabled(false);
+                All.setVisible(false);
+                Ajouter.setVisible(!true);
+                Modifier.setVisible(!true);
+                Supprimer.setVisible(true);
+                Create.setVisible(true);
+                return;
+            }
+            else{
+                Year.setEnabled(true);
+                Month.setEnabled(true);
+                Day.setEnabled(true);
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_promosMouseClicked
 
     private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
         CreatePromo();
+        Year.setEnabled(true);
+        Month.setEnabled(true);
+        Day.setEnabled(true);
     }//GEN-LAST:event_CreateActionPerformed
 
     private void ModifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierActionPerformed
-        String date_fin = Year.getSelectedItem().toString()+"-"+Month.getSelectedItem().toString()+"-"+Day.getSelectedItem().toString(),tous="";
-        String[] colonnes = {"nom","reduction","date_fin","tous_produits"};
-        if(All.isSelected()){
-            tous="1";
-            System.out.println(db.executionUpdate("UPDATE produits SET en_promotion=1"));
+        if(validInput()){
+            String date_fin = Year.getSelectedItem().toString()+"-"+Month.getSelectedItem().toString()+"-"+Day.getSelectedItem().toString(),tous="";
+            String[] colonnes = {"nom","reduction","date_fin","tous_produits"};
+            if(All.isSelected()){
+                delPromotion();
+                tous="1";
+                System.out.println(db.executionUpdate("UPDATE produits SET id_promotion="+Integer.toString(valid())));
+                setPromotion();
+            }
+            else{
+                delPromotion();
+                tous="0";
+                System.out.println(db.executionUpdate("UPDATE produits SET id_promotion=NULL"));
+            }
+            String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),date_fin,tous};
+            System.out.println(db.queryUpdate("promotions", colonnes, valeurs, "id='"+promos.getValueAt(promos.getSelectedRow(), 0)+"'"));
+            setTable();
+            CreatePromo();
+            Year.setEnabled(true);
+            Month.setEnabled(true);
+            Day.setEnabled(true);
         }
-        else{
-            tous="0";
-            System.out.println(db.executionUpdate("UPDATE produits SET en_promotion=1"));
-        }
-        String[] valeurs = {Nom.getText(),Reduction.getValue().toString(),date_fin,tous};
-        delPromotion();
-        System.out.println(db.queryUpdate("promotions", colonnes, valeurs, "id='"+promos.getValueAt(promos.getSelectedRow(), 0)+"'"));
-        setPromotion();
-        setTable();
-        CreatePromo();
     }//GEN-LAST:event_ModifierActionPerformed
 
     private void SupprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerActionPerformed
         if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cette promotion ??",
-            "Suppression de fournisseur", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+            "Suppression de promotion", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
             delPromotion();
             System.out.println(db.queryDelete("promotions", "id='"+promos.getValueAt(promos.getSelectedRow(), 0)+"'"));
             setTable();
             CreatePromo();
-            delProductPromo();
         }
+        Year.setEnabled(true);
+        Month.setEnabled(true);
+        Day.setEnabled(true);
     }//GEN-LAST:event_SupprimerActionPerformed
 
 
@@ -618,4 +638,88 @@ public class Promotion extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable promos;
     // End of variables declaration//GEN-END:variables
+    public class ResultSetTableModel extends AbstractTableModel {
+
+        private ResultSet rs;
+
+        public ResultSetTableModel(ResultSet rs) {
+            this.rs = rs;
+            fireTableDataChanged();
+        }
+
+        public int getColumnCount() {
+            try {
+                if (rs == null) {
+                    return 0;
+                } else {
+                    return  rs.getMetaData().getColumnCount();
+                }
+            } catch (SQLException e) {
+                System.out.println("getColumncount  resultset generating error while getting column count");
+                System.out.println(e.getMessage());
+                return 0;
+            }
+        }
+
+        public int getRowCount() {
+            try {
+                if (rs == null) {
+                    return 0;
+                } else {
+                    rs.last();
+                    return rs.getRow();
+                }
+            } catch (SQLException e) {
+                System.out.println("getrowcount resultset generating error while getting rows count");
+                System.out.println(e.getMessage());
+                return 0;
+            }
+        }
+
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            if (rowIndex < 0 || rowIndex > getRowCount()
+                    || columnIndex < 0 || columnIndex > getColumnCount()) {
+                return null;
+            }
+            try {
+                if (rs == null) {
+                    return null;
+                } else {
+                    rs.absolute(rowIndex + 1);
+                    if (columnIndex == 3 || columnIndex == 4) { // columnIndexOfDatePeremption représente l'indice de la colonne "date_peremption"
+                    // Récupérer la valeur de la colonne "date_peremption" en tant que String
+                        return rs.getString(columnIndex + 1);
+                    } else {
+                        // Récupérer les autres valeurs normalement
+                        return rs.getObject(columnIndex + 1);
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println("getvalueat resultset generating error while fetching rows");
+                System.out.println(e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            try {
+                if (rs == null) {
+                    return null;
+                } else {
+                    // Récupérer le nom de la colonne à partir de l'alias si disponible
+                    String columnName = rs.getMetaData().getColumnLabel(columnIndex + 1);
+                    if (columnName == null || columnName.isEmpty()) {
+                        // Si l'alias n'est pas disponible, utilisez le nom de la colonne de la table
+                        columnName = rs.getMetaData().getColumnName(columnIndex + 1);
+                    }
+                    return columnName;
+                }
+            } catch (SQLException e) {
+                System.out.println("getColumnname  resultset generating error while fetching column name");
+                System.out.println(e.getMessage());
+            }
+            return super.getColumnName(columnIndex);
+        }
+    }
 }

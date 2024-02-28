@@ -59,6 +59,7 @@ public class db_connection {
         } catch (SQLException ex) {
             result = ex.toString();
         }
+        closeconnexion();
         return result;
 
     }
@@ -120,16 +121,23 @@ public class db_connection {
 
         connexionDatabase();
         int i;
+        
         SQL = "INSERT INTO " + nomTable + " VALUES(";
 
         for (i = 0; i <= contenuTableau.length - 1; i++) {
-            SQL += "'" + contenuTableau[i] + "'";
+            if(contenuTableau[i].equals("NULL")){
+                SQL += contenuTableau[i] ;
+            }
+            else{
+                SQL += '"' + contenuTableau[i] + '"';
+            }
             if (i < contenuTableau.length - 1) {
                 SQL += ",";
             }
         }
 
         SQL += ")";
+        closeconnexion();
         return this.executionUpdate(SQL);
 
     }
@@ -147,13 +155,19 @@ public class db_connection {
         }
         SQL += ") VALUES(";
         for (i = 0; i <= contenuTableau.length - 1; i++) {
-            SQL += "'" + contenuTableau[i] + "'";
+            if(contenuTableau[i].equals("NULL")){
+                SQL += contenuTableau[i] ;
+            }
+            else{
+                SQL += '"' + contenuTableau[i] + '"';
+            }
             if (i < contenuTableau.length - 1) {
                 SQL += ",";
             }
         }
 
         SQL += ")";
+        closeconnexion();
         return this.executionUpdate(SQL);
 
     }
@@ -165,13 +179,19 @@ public class db_connection {
         SQL = "UPDATE " + nomTable + " SET ";
 
         for (i = 0; i <= nomColonne.length - 1; i++) {
-            SQL += nomColonne[i] + "='" + contenuTableau[i] + "'";
+            if(contenuTableau[i].equals("NULL")){
+                SQL += nomColonne[i] + "=" + contenuTableau[i] ;
+            }
+            else{
+                SQL += nomColonne[i] + '=' + '"' + contenuTableau[i] + '"';
+            }
             if (i < nomColonne.length - 1) {
                 SQL += ",";
             }
         }
 
         SQL += " WHERE " + état;
+        closeconnexion();
         return this.executionUpdate(SQL);
 
     }
@@ -180,6 +200,7 @@ public class db_connection {
 
         connexionDatabase();
         SQL = "DELETE FROM " + nomtable;
+        closeconnexion();
         return this.executionUpdate(SQL);
 
     }
@@ -188,6 +209,7 @@ public class db_connection {
 
         connexionDatabase();
         SQL = "DELETE FROM " + nomTable + " WHERE " + état;
+        closeconnexion();
         return this.executionUpdate(SQL);
 
     }

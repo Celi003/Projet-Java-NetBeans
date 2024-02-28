@@ -44,5 +44,5 @@
 .Gestion des fournisseurs ✅;
 .Système de suivi des ventes(facultatif);✅
 .Gestion des promotions;✅
-.Gestion des produits;
-.Gestion des commandes;
+.Gestion des produits ✅;
+.Gestion des commandes ✅;

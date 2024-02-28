@@ -114,6 +114,7 @@ public class Caissier extends javax.swing.JFrame {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         switchPanel("Historique");
+        historique.setCaissierList();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**

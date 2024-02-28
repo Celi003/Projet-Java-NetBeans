@@ -94,6 +94,7 @@ public class Ventes extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -144,6 +145,7 @@ public class Ventes extends javax.swing.JPanel {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Produits");
 
+        Recherche.setForeground(new java.awt.Color(0, 102, 102));
         Recherche.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RechercheActionPerformed(evt);
@@ -152,6 +154,7 @@ public class Ventes extends javax.swing.JPanel {
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/chercher.png"))); // NOI18N
 
+        jList1.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(jList1);
         setList();
         jList1.addListSelectionListener(new ListSelectionListener() {
@@ -174,6 +177,10 @@ public class Ventes extends javax.swing.JPanel {
                     try{
                         while(rs.next()){
                             Prix.setText(rs.getString("prix"));
+                            if(rs.getInt("quantite_dispo")<1){
+                                JOptionPane.showMessageDialog(Ajouter, "Ce produit est en rupture de stock");
+                                return;
+                            }
                             Quantite.setModel(new SpinnerNumberModel(1, 1, Integer.parseInt(rs.getString("quantite_dispo")), 1));
                         }
                     }
@@ -197,6 +204,7 @@ public class Ventes extends javax.swing.JPanel {
         jLabel2.setText("Prix");
 
         Prix.setEditable(false);
+        Prix.setForeground(new java.awt.Color(0, 102, 102));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -240,6 +248,7 @@ public class Ventes extends javax.swing.JPanel {
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("Mode de paiement");
 
+        InputPaiement.setForeground(new java.awt.Color(0, 102, 102));
         InputPaiement.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"ESPECE","CARTE BANCAIRE","MOMO"}));
         InputPaiement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,7 +356,7 @@ public class Ventes extends javax.swing.JPanel {
         Ajouter.setVisible(false);
         Modifier.setVisible(false);
         Supprimer.setVisible(false);
-        Quantite.setModel(new SpinnerNumberModel(1, 1, 100, 1));
+        Quantite.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
         Montant.setModel(new SpinnerNumberModel(1, 1, 999999999, 1));
         Spinnermodel = Montant.getModel();
         Spinnermodel.addChangeListener(new ChangeListener() {
@@ -361,11 +370,19 @@ public class Ventes extends javax.swing.JPanel {
         add(jPanel1);
 
         Facture.setBackground(new java.awt.Color(255, 255, 255));
+        Facture.setLayout(new java.awt.GridBagLayout());
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 0, 102));
         jLabel5.setText("SuperMarché");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 76, 0, 0);
+        Facture.add(jLabel5, gridBagConstraints);
 
+        table.setForeground(new java.awt.Color(0, 102, 102));
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -389,9 +406,31 @@ public class Ventes extends javax.swing.JPanel {
         });
         jScrollPane2.setViewportView(table);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 11;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 547;
+        gridBagConstraints.ipady = 358;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 0);
+        Facture.add(jScrollPane2, gridBagConstraints);
+
         Date.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         Date.setForeground(new java.awt.Color(255, 0, 102));
         Date.setText("Date");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(9, 12, 0, 0);
+        Facture.add(Date, gridBagConstraints);
+        Date.setText(dateFormat.format(date));
+        Date.setVisible(false);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
@@ -402,9 +441,18 @@ public class Ventes extends javax.swing.JPanel {
         jPanel3.add(jLabel7);
 
         NFacture.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        NFacture.setForeground(new java.awt.Color(255, 0, 102));
+        NFacture.setForeground(new java.awt.Color(0, 102, 102));
         NFacture.setText("00000000");
         jPanel3.add(NFacture);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 17, 0, 0);
+        Facture.add(jPanel3, gridBagConstraints);
+        jPanel3.setVisible(false);
 
         Valider.setBackground(new java.awt.Color(0, 204, 0));
         Valider.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -415,6 +463,13 @@ public class Ventes extends javax.swing.JPanel {
                 ValiderActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(32, 108, 0, 0);
+        Facture.add(Valider, gridBagConstraints);
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
@@ -425,9 +480,16 @@ public class Ventes extends javax.swing.JPanel {
         jPanel4.add(Paiement);
 
         Recu.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Recu.setForeground(new java.awt.Color(255, 0, 102));
+        Recu.setForeground(new java.awt.Color(0, 102, 102));
         Recu.setText("1 ");
         jPanel4.add(Recu);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 6, 0, 0);
+        Facture.add(jPanel4, gridBagConstraints);
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
@@ -438,9 +500,17 @@ public class Ventes extends javax.swing.JPanel {
         jPanel5.add(jLabel8);
 
         Total.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Total.setForeground(new java.awt.Color(255, 0, 102));
+        Total.setForeground(new java.awt.Color(0, 102, 102));
         Total.setText("0 ");
         jPanel5.add(Total);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 98, 0, 0);
+        Facture.add(jPanel5, gridBagConstraints);
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
@@ -451,9 +521,18 @@ public class Ventes extends javax.swing.JPanel {
         jPanel6.add(jLabel14);
 
         Monnaie.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Monnaie.setForeground(new java.awt.Color(255, 0, 102));
+        Monnaie.setForeground(new java.awt.Color(0, 102, 102));
         Monnaie.setText("0");
         jPanel6.add(Monnaie);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.ipadx = 23;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 14, 0, 0);
+        Facture.add(jPanel6, gridBagConstraints);
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
@@ -464,64 +543,18 @@ public class Ventes extends javax.swing.JPanel {
         jPanel7.add(jLabel9);
 
         NCaissier.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        NCaissier.setForeground(new java.awt.Color(255, 0, 102));
+        NCaissier.setForeground(new java.awt.Color(0, 102, 102));
         NCaissier.setText("azerty");
         jPanel7.add(NCaissier);
         NCaissier.setText(Integer.toString(id_caissier));
 
-        javax.swing.GroupLayout FactureLayout = new javax.swing.GroupLayout(Facture);
-        Facture.setLayout(FactureLayout);
-        FactureLayout.setHorizontalGroup(
-            FactureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 563, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addGap(253, 253, 253)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(261, 261, 261)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addGap(263, 263, 263)
-                .addComponent(Valider))
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addGap(231, 231, 231)
-                .addComponent(jLabel5))
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addGroup(FactureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(FactureLayout.createSequentialGroup()
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(223, 223, 223)
-                        .addComponent(Date))))
-        );
-        FactureLayout.setVerticalGroup(
-            FactureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(FactureLayout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(4, 4, 4)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
-                .addGroup(FactureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(Date)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addGroup(FactureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
-                .addComponent(Valider))
-        );
-
-        Date.setText(dateFormat.format(date));
-        Date.setVisible(false);
-        jPanel3.setVisible(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(9, 17, 0, 0);
+        Facture.add(jPanel7, gridBagConstraints);
         jPanel3.setVisible(false);
 
         add(Facture);
@@ -535,6 +568,10 @@ public class Ventes extends javax.swing.JPanel {
         rs = db.querySelectAll("produits","code='"+jList1.getSelectedValue().split(espace)[0]+"'");
         try {
             while(rs.next()){
+                if(rs.getInt("quantite_dispo")<Integer.parseInt(Quantite.getValue().toString())){
+                    JOptionPane.showMessageDialog(this, "La quantité disponible de ce produit est "+rs.getString("quantite_dispo"),"Ajout impossible",JOptionPane.ERROR_MESSAGE);
+                    return ;
+                }
                 Object[] ligne = {rs.getString("nom"), Quantite.getValue(), rs.getString("prix"), Integer.parseInt(Quantite.getValue().toString())*Integer.parseInt(rs.getString("prix"))};
                 TableModel.addRow(ligne);
             }
@@ -545,6 +582,7 @@ public class Ventes extends javax.swing.JPanel {
         jList1.clearSelection();
         setTotal();
         setMonnaie();
+        
         Ajouter.setVisible(false);
     }//GEN-LAST:event_AjouterActionPerformed
 
@@ -598,9 +636,9 @@ public class Ventes extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Le montant est inférieur au coût total", "Vente impossible", JOptionPane.ERROR_MESSAGE);
         }
         else{
-            String[] colonnes = {"produits","cout","montant_recu","moyen_paiement","date","id_caissier"};
+            String[] colonnes = {"cout","montant_recu","monnaie","moyen_paiement","date","id_caissier"};
             String[] col = {"quantite_dispo"};
-            int new_qte = 0;
+            int new_qte = 0 , n_vente = 0 , code_produit = 0 , qte = 0 , montant_produit = 0;
             String produits ="",etat="id_caissier='"+Integer.toString(id_caissier)+"' and date='"+dateFormat.format(date)+"'";
             for(int i=0 ; i<table.getRowCount();i++){
                 rs = db.querySelectAll("produits", "nom='"+table.getValueAt(i, 0).toString()+"'");
@@ -625,10 +663,8 @@ public class Ventes extends javax.swing.JPanel {
                     produits += ";";
                 }
             }
-            String[] valeurs = {produits,Total.getText(),Montant.getValue().toString(),InputPaiement.getSelectedItem().toString(),dateFormat.format(date),Integer.toString(id_caissier)};
+            String[] valeurs = {Total.getText(),Montant.getValue().toString(),Monnaie.getText(),InputPaiement.getSelectedItem().toString(),dateFormat.format(date),Integer.toString(id_caissier)};
             System.out.println(db.queryInsert("ventes", colonnes, valeurs));
-            TableModel.setRowCount(0);
-            table.setModel(TableModel);
             setTotal();
             setMonnaie();
             Prix.setText("");
@@ -639,11 +675,21 @@ public class Ventes extends javax.swing.JPanel {
             NFacture.setVisible(true);
             try {
                 while(rs.next()){
-                    NFacture.setText(rs.getString("id"));
+                    n_vente = Integer.parseInt(rs.getString("n_vente"));
+                    NFacture.setText(Integer.toString(n_vente));
+                }
+                for(int i=0 ; i<table.getRowCount();i++){
+                    rs = db.querySelectAll("produits", "nom='"+table.getValueAt(i, 0).toString()+"'");
+                    while(rs.next()){
+                      String[] vals = {Integer.toString(n_vente),rs.getString("code"),table.getValueAt(i, 1).toString(),table.getValueAt(i, 3).toString()};
+                      System.out.println(db.queryInsert("ventes_produits", vals));
+                    }
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Ventes.class.getName()).log(Level.SEVERE, null, ex);
             }
+            TableModel.setRowCount(0);
+            table.setModel(TableModel);
             PrintUtilities.printComponent(Facture);
             Date.setVisible(!true);
             NFacture.setVisible(!true);

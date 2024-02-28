@@ -6,6 +6,8 @@ import Main.db_connection;
 import java.awt.CardLayout;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,8 +65,8 @@ public class Personnel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "L'identifiant de l'utilisateur doit contenir au minimum 5 caractères");
             return false;
         }
-        else if(InputContact.getText().length()>8 ) {
-            JOptionPane.showMessageDialog(this, "Le contact est censé s'écrire sans espace et doit contenir au maximum 8 caractères");
+        else if(InputContact.getText().length()<11 ) {
+            JOptionPane.showMessageDialog(this, "Le contact est censé s'écrire au format internationnale '+22940404522' et doit avoir au minimum 11 caractères");
             return false;
         }
         else{
@@ -108,6 +110,8 @@ public class Personnel extends javax.swing.JPanel {
         InputPrenoms.setText("");
         InputRole.setSelectedItem("admin");
         InputContact.setText("");
+        Identifiant.setText("");
+        Password.setText("");
         Voir.setVisible(true);
         Nom.setVisible(!true);
         Prenoms.setVisible(!true);
@@ -177,6 +181,8 @@ public class Personnel extends javax.swing.JPanel {
         jLabel5.setForeground(new java.awt.Color(255, 0, 102));
         jLabel5.setText("Confirmation :");
         jPanel5.add(jLabel5);
+
+        Confirmation.setForeground(new java.awt.Color(0, 102, 102));
         jPanel5.add(Confirmation);
 
         jPanel8.setBackground(new java.awt.Color(255, 255, 255));
@@ -186,6 +192,8 @@ public class Personnel extends javax.swing.JPanel {
         jLabel6.setForeground(new java.awt.Color(255, 0, 102));
         jLabel6.setText("Identifiant     :");
         jPanel8.add(jLabel6);
+
+        Identifiant.setForeground(new java.awt.Color(0, 102, 102));
         jPanel8.add(Identifiant);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -196,7 +204,8 @@ public class Personnel extends javax.swing.JPanel {
         jLabel3.setText("Rôle              :");
         jPanel3.add(jLabel3);
 
-        InputRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin" , "caissier" , "aide client" , "agent de nettoyage" , "agent de parking" , "controleur produit" }));
+        InputRole.setForeground(new java.awt.Color(0, 102, 102));
+        InputRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin" , "caissier" , "aide client" , "agent de nettoyage" , "agent de parking" , "testeur produit" , "agent de sécurité" }));
         InputRole.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputRoleActionPerformed(evt);
@@ -217,6 +226,8 @@ public class Personnel extends javax.swing.JPanel {
         jLabel1.setForeground(new java.awt.Color(255, 0, 102));
         jLabel1.setText("Nom             :");
         jPanel1.add(jLabel1);
+
+        InputNom.setForeground(new java.awt.Color(0, 102, 102));
         jPanel1.add(InputNom);
 
         Nom.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
@@ -232,6 +243,8 @@ public class Personnel extends javax.swing.JPanel {
         jLabel4.setForeground(new java.awt.Color(255, 0, 102));
         jLabel4.setText("Mot de passe :");
         jPanel4.add(jLabel4);
+
+        Password.setForeground(new java.awt.Color(0, 102, 102));
         jPanel4.add(Password);
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
@@ -242,6 +255,13 @@ public class Personnel extends javax.swing.JPanel {
         jLabel7.setText("Contact        :");
         jPanel6.add(jLabel7);
 
+        InputContact.setForeground(new java.awt.Color(0, 102, 102));
+        InputContact.setText("ex:+22940404522");
+        InputContact.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                InputContactMouseClicked(evt);
+            }
+        });
         InputContact.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputContactActionPerformed(evt);
@@ -263,6 +283,7 @@ public class Personnel extends javax.swing.JPanel {
         jLabel2.setText("Prénoms       :");
         jPanel2.add(jLabel2);
 
+        InputPrenoms.setForeground(new java.awt.Color(0, 102, 102));
         InputPrenoms.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputPrenomsActionPerformed(evt);
@@ -435,6 +456,7 @@ public class Personnel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 6, 0, 6);
         jPanel7.add(jButton1, gridBagConstraints);
 
+        Recherche.setForeground(new java.awt.Color(0, 102, 102));
         Recherche.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RechercheActionPerformed(evt);
@@ -471,6 +493,7 @@ public class Personnel extends javax.swing.JPanel {
             }
         });
 
+        personnel.setForeground(new java.awt.Color(0, 102, 102));
         personnel.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -594,8 +617,8 @@ public class Personnel extends javax.swing.JPanel {
 
     private void SupprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerActionPerformed
         String etat = "nom='" + Nom.getText()+"' and prenoms='" + Prenoms.getText() +"'";
-        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cet utilisateur ??",
-            "Suppression d'utilisateur", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cet employé ??",
+            "Suppression d'employé", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
         System.out.println(db.queryDelete("personnel", etat));
         showCreateUser();
         setTable();
@@ -651,7 +674,21 @@ public class Personnel extends javax.swing.JPanel {
         Prenoms.setText((String) personnel.getValueAt(i, 2));
         Role.setText((String) personnel.getValueAt(i, 3));
         Contact.setText((String) personnel.getValueAt(i, 4));
+        rs = db.querySelectAll("ventes", "id_caissier = '"+personnel.getValueAt(i, 0).toString()+"'");
+        try {
+            while(rs.next()){
+                Supprimer.setVisible(false);
+                return;
+            }
+            Supprimer.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Personnel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_personnelMouseClicked
+
+    private void InputContactMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_InputContactMouseClicked
+        InputContact.setText("");
+    }//GEN-LAST:event_InputContactMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

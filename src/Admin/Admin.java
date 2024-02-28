@@ -200,14 +200,26 @@ public class Admin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        produits.setTable();
+        produits.setInputPromo();
+        produits.setCategorie();
         switchPanel("Produits");
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        categories.setTable();
+        categories.setPromotion();
+        for(int i = 0 ; i < categories.categories.getRowCount() ; i++){
+            if(categories.categories.isRowSelected(i)){
+                categories.setInputPromo();
+                break;
+            }
+        }
         switchPanel("Catégories");
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        commandes.setFournisseurs();
         switchPanel("Commandes");
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
@@ -221,13 +233,16 @@ public class Admin extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         switchPanel("Fournisseurs");
+        fournisseurs.setTable();
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         switchPanel("Promotions");
+        promotions.VerifyAll();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        historique.setCaissiers();
         switchPanel("Historique");
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 

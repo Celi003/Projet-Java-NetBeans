@@ -72,12 +72,21 @@ public class ResultSetTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int columnIndex) {
         try {
-            return rs.getMetaData().getColumnName(columnIndex + 1);
+            if (rs == null) {
+                return null;
+            } else {
+                // Récupérer le nom de la colonne à partir de l'alias si disponible
+                String columnName = rs.getMetaData().getColumnLabel(columnIndex + 1);
+                if (columnName == null || columnName.isEmpty()) {
+                    // Si l'alias n'est pas disponible, utilisez le nom de la colonne de la table
+                    columnName = rs.getMetaData().getColumnName(columnIndex + 1);
+                }
+                return columnName;
+            }
         } catch (SQLException e) {
             System.out.println("getColumnname  resultset generating error while fetching column name");
             System.out.println(e.getMessage());
         }
         return super.getColumnName(columnIndex);
     }
-    
 }

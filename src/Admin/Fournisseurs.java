@@ -4,6 +4,8 @@ import Main.Parameter;
 import Main.ResultSetTableModel;
 import Main.db_connection;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -46,8 +48,12 @@ public class Fournisseurs extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Le nom du fournisseur ou de l'entreprise doit contenir au minimum 2 caractères");
             return false;
         }
-        else if(InputContact.getText().length()>8 ) {
-            JOptionPane.showMessageDialog(this, "Le contact est censé s'écrire sans espace et doit contenir au maximum 8 caractères");
+        else if(InputCode.getText().length()<2 ){
+            JOptionPane.showMessageDialog(this, "Le code du fournisseur ou de l'entreprise doit contenir au minimum 2 caractères");
+            return false;
+        }
+        else if(InputContact.getText().length()<11 ) {
+            JOptionPane.showMessageDialog(this, "Le contact est censé s'écrire au format internationnale '+22940404522' et doit avoir au minimum 11 caractères");
             return false;
         }
         else{
@@ -133,6 +139,8 @@ public class Fournisseurs extends javax.swing.JPanel {
         jLabel2.setForeground(new java.awt.Color(255, 0, 102));
         jLabel2.setText("Code                  :");
         jPanel2.add(jLabel2);
+
+        InputCode.setForeground(new java.awt.Color(0, 102, 102));
         jPanel2.add(InputCode);
 
         Code.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
@@ -186,6 +194,13 @@ public class Fournisseurs extends javax.swing.JPanel {
         jLabel7.setText("Contact              :");
         jPanel6.add(jLabel7);
 
+        InputContact.setForeground(new java.awt.Color(0, 102, 102));
+        InputContact.setText("ex:+22940404522");
+        InputContact.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                InputContactMouseClicked(evt);
+            }
+        });
         InputContact.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputContactActionPerformed(evt);
@@ -211,6 +226,8 @@ public class Fournisseurs extends javax.swing.JPanel {
         jLabel1.setForeground(new java.awt.Color(255, 0, 102));
         jLabel1.setText("Nom | Entreprise:");
         jPanel1.add(jLabel1);
+
+        InputNom.setForeground(new java.awt.Color(0, 102, 102));
         jPanel1.add(InputNom);
 
         Nom.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 14)); // NOI18N
@@ -322,6 +339,7 @@ public class Fournisseurs extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel4.add(jLabel9, gridBagConstraints);
 
+        Recherche.setForeground(new java.awt.Color(0, 102, 102));
         Recherche.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RechercheActionPerformed(evt);
@@ -426,7 +444,7 @@ public class Fournisseurs extends javax.swing.JPanel {
 
     private void SupprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerActionPerformed
         String etat = "code='" + Code.getText()+"'";
-        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cet fournisseur ??",
+        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer ce fournisseur ??",
             "Suppression de fournisseur", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
             System.out.println(db.queryDelete("fournisseurs", etat));
             setTable();
@@ -458,7 +476,21 @@ public class Fournisseurs extends javax.swing.JPanel {
         Code.setText((String) fournisseurs.getValueAt(i, 0));
         Nom.setText((String) fournisseurs.getValueAt(i, 1));
         Contact.setText((String) fournisseurs.getValueAt(i, 2));
+        rs = db.querySelectAll("commandes", "code_fournisseur = '"+fournisseurs.getValueAt(i, 0).toString()+"'");
+        try {
+            while(rs.next()){
+                Supprimer.setVisible(false);
+                return;
+            }
+            Supprimer.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Personnel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_fournisseursMouseClicked
+
+    private void InputContactMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_InputContactMouseClicked
+        InputContact.setText("");
+    }//GEN-LAST:event_InputContactMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

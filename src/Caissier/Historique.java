@@ -1,6 +1,7 @@
 package Caissier;
 
 import Main.Parameter;
+import Main.PrintUtilities;
 import Main.db_connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import javax.swing.SpinnerModel;
@@ -20,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
 public class Historique extends javax.swing.JPanel {
 
     db_connection db;
-    ResultSet rs = null;
+    ResultSet rs = null , rst = null;
     String espace = "   ";
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date date = new Date();
@@ -52,18 +54,48 @@ public class Historique extends javax.swing.JPanel {
         jList1.setModel(listModel);
     }
     
-    public void setCaissiers(){
-        String[] colonnes = {"nom","prenoms"};
-        rs = db.fcSelectCommand(colonnes, "personnel", "role='caissier'");
-        Caissiers.addItem("Tous les caissiers");
+    public void setCaissierList(){
+        String nom_prenoms = caissier.getText();
+        String[] n_p = nom_prenoms.split(espace);
+        jList1.clearSelection();
+        DefaultListModel CaissierModel = new DefaultListModel<>();
+        rs = db.querySelectAll("ventes JOIN personnel on ventes.id_caissier=personnel.id", "nom='"+n_p[0]+"' and prenoms='"+n_p[1]+"'");
         try {
             while(rs.next()){
-                System.out.println("Caissier ajouté");
-                Caissiers.addItem(rs.getString("nom")+espace+rs.getString("prenoms"));
+                CaissierModel.addElement(rs.getString("n_vente"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(Historique.class.getName()).log(Level.SEVERE, null, ex);
         }
+        jList1.setModel(CaissierModel);
+    }
+    
+    public void setCaissiers(){
+        String[] colonnes = {"nom", "prenoms"};
+        ComboModel = (DefaultComboBoxModel<String>) Caissiers.getModel();
+        ComboModel.removeAllElements();
+        if (id_caissier == 0) { // Si l'utilisateur est un admin
+            ComboModel.addElement("Tous les caissiers");
+            rs = db.fcSelectCommand(colonnes, "personnel", "role='caissier'");
+            try {
+                while (rs.next()) {
+                    ComboModel.addElement(rs.getString("nom") + espace + rs.getString("prenoms"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Historique.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else { // Si l'utilisateur est un caissier ordinaire
+            // Afficher uniquement le caissier connecté
+            try {
+                rs = db.querySelectAll("personnel", "id='" + id_caissier + "'");
+                while (rs.next()) {
+                    ComboModel.addElement(rs.getString("nom") + espace + rs.getString("prenoms"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Historique.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        Caissiers.setModel(ComboModel);
     }
     
     public void RechercheModifie(){
@@ -116,6 +148,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel8 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         NFacture = new javax.swing.JLabel();
+        Imprimer = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 0, 102));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
@@ -126,6 +159,7 @@ public class Historique extends javax.swing.JPanel {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Ventes");
 
+        Recherche.setForeground(new java.awt.Color(0, 102, 102));
         Recherche.setText("Rechercher un numero de vente");
         Recherche.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -140,6 +174,7 @@ public class Historique extends javax.swing.JPanel {
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/chercher.png"))); // NOI18N
 
+        jList1.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(jList1);
         setList();
         jList1.addListSelectionListener(new ListSelectionListener() {
@@ -150,27 +185,24 @@ public class Historique extends javax.swing.JPanel {
                 }
                 if (!e.getValueIsAdjusting() && !jList1.isSelectionEmpty()) {
                     TableModel = (DefaultTableModel) table.getModel();
-                    String num = jList1.getSelectedValue(),produits="";
-                    String[] produit={},infos={};
-                    rs = db.querySelectAll("ventes", "n_vente='"+num+"'");
+                    TableModel.setRowCount(0);
+                    String num = jList1.getSelectedValue();
+                    rs = db.querySelectAll("ventes_produits JOIN produits ON code_produit = code JOIN ventes ON ventes_produits.n_vente = ventes.n_vente", "ventes.n_vente='"+num+"'");
                     try {
                         while(rs.next()){
-                            NFacture.setText(rs.getString("n_vente"));
+                            Object[] Nligne = {rs.getString("nom"),rs.getString("quantite"),rs.getString("prix"),rs.getString("montant")};
+                            TableModel.addRow(Nligne);
+                            Object[] ligne = {rs.getString("nom"),rs.getString("quantite"),rs.getString("prix"),rs.getString("montant")};
+                            NFacture.setText(num);
+                            NCaissier.setText(rs.getString("id_caissier"));
                             Date.setText(rs.getString("date"));
                             Total.setText(rs.getString("cout"));
                             Paiement.setText(rs.getString("moyen_paiement")+espace);
                             Recu.setText(rs.getString("montant_recu"));
                             Monnaie.setText(rs.getString("monnaie"));
-                            produits = rs.getString("produits");
                         }
                     } catch (SQLException ex) {
                         Logger.getLogger(Ventes.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    produit = produits.split(";");
-                    for(int i=0 ; i<produit.length ; i++){
-                        infos = produit[i].split(",");
-                        Object[] ligne = {infos[0].substring(1),infos[1],infos[2],infos[3].substring(1, infos[3].length()-1)};
-                        TableModel.addRow(ligne);
                     }
                     table.setModel(TableModel);
                 }
@@ -181,6 +213,7 @@ public class Historique extends javax.swing.JPanel {
         caissier.setForeground(new java.awt.Color(255, 255, 255));
         caissier.setText("Caissier");
 
+        Caissiers.setForeground(new java.awt.Color(0, 102, 102));
         Caissiers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
         Caissiers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,6 +300,7 @@ public class Historique extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 78, 0, 0);
         Facture.add(jLabel5, gridBagConstraints);
 
+        table.setForeground(new java.awt.Color(0, 102, 102));
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -293,9 +327,9 @@ public class Historique extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = 8;
+        gridBagConstraints.gridwidth = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 650;
+        gridBagConstraints.ipadx = 668;
         gridBagConstraints.ipady = 377;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
@@ -323,7 +357,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel4.add(Paiement);
 
         Recu.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Recu.setForeground(new java.awt.Color(255, 0, 102));
+        Recu.setForeground(new java.awt.Color(0, 102, 102));
         Recu.setText("1 ");
         jPanel4.add(Recu);
 
@@ -332,7 +366,7 @@ public class Historique extends javax.swing.JPanel {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.ipadx = 48;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(18, 6, 30, 0);
+        gridBagConstraints.insets = new java.awt.Insets(18, 6, 0, 0);
         Facture.add(jPanel4, gridBagConstraints);
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
@@ -344,7 +378,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel5.add(jLabel8);
 
         Total.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Total.setForeground(new java.awt.Color(255, 0, 102));
+        Total.setForeground(new java.awt.Color(0, 102, 102));
         Total.setText("0 ");
         jPanel5.add(Total);
 
@@ -366,7 +400,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel6.add(jLabel14);
 
         Monnaie.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        Monnaie.setForeground(new java.awt.Color(255, 0, 102));
+        Monnaie.setForeground(new java.awt.Color(0, 102, 102));
         Monnaie.setText("0");
         jPanel6.add(Monnaie);
 
@@ -376,7 +410,7 @@ public class Historique extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 23;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(18, 45, 30, 0);
+        gridBagConstraints.insets = new java.awt.Insets(18, 45, 0, 0);
         Facture.add(jPanel6, gridBagConstraints);
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
@@ -388,7 +422,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel7.add(jLabel9);
 
         NCaissier.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        NCaissier.setForeground(new java.awt.Color(255, 0, 102));
+        NCaissier.setForeground(new java.awt.Color(0, 102, 102));
         NCaissier.setText("0000");
         jPanel7.add(NCaissier);
 
@@ -409,7 +443,7 @@ public class Historique extends javax.swing.JPanel {
         jPanel8.add(jLabel10);
 
         NFacture.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        NFacture.setForeground(new java.awt.Color(255, 0, 102));
+        NFacture.setForeground(new java.awt.Color(0, 102, 102));
         NFacture.setText("0000");
         jPanel8.add(NFacture);
 
@@ -420,6 +454,22 @@ public class Historique extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 16, 0, 0);
         Facture.add(jPanel8, gridBagConstraints);
+
+        Imprimer.setBackground(new java.awt.Color(0, 204, 0));
+        Imprimer.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Imprimer.setForeground(new java.awt.Color(255, 255, 255));
+        Imprimer.setText("Imprimer");
+        Imprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ImprimerActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 8, 0, 0);
+        Facture.add(Imprimer, gridBagConstraints);
 
         add(Facture);
     }// </editor-fold>//GEN-END:initComponents
@@ -433,34 +483,44 @@ public class Historique extends javax.swing.JPanel {
     }//GEN-LAST:event_tableMouseClicked
 
     private void CaissiersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CaissiersActionPerformed
-        String nom_prenoms = Caissiers.getSelectedItem().toString();
-        if(nom_prenoms.equals("Tous les caissiers")){
-            setList();
-            return;
-        }
-        String[] n_p = nom_prenoms.split(espace);
-        jList1.clearSelection();
-        DefaultListModel CaissierModel = new DefaultListModel<>();
-        rs = db.querySelectAll("ventes JOIN personnel on ventes.id_caissier=personnel.id", "nom='"+n_p[0]+"' and prenoms='"+n_p[1]+"'");
-        try {
-            while(rs.next()){
-                CaissierModel.addElement(rs.getString("n_vente"));
+        Object selected = Caissiers.getSelectedItem();
+        if (selected != null) {
+            String nom_prenoms = selected.toString();
+            if(nom_prenoms.equals("Tous les caissiers")){
+                setList();
+                return;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Historique.class.getName()).log(Level.SEVERE, null, ex);
+            String[] n_p = nom_prenoms.split(espace);
+            jList1.clearSelection();
+            DefaultListModel CaissierModel = new DefaultListModel<>();
+            rs = db.querySelectAll("ventes JOIN personnel on ventes.id_caissier=personnel.id", "nom='"+n_p[0]+"' and prenoms='"+n_p[1]+"'");
+            try {
+                while(rs.next()){
+                    CaissierModel.addElement(rs.getString("n_vente"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Historique.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            jList1.setModel(CaissierModel);
         }
-        jList1.setModel(CaissierModel);
     }//GEN-LAST:event_CaissiersActionPerformed
 
     private void RechercheMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RechercheMouseClicked
         Recherche.setText("");
     }//GEN-LAST:event_RechercheMouseClicked
 
+    private void ImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImprimerActionPerformed
+        Imprimer.setVisible(false);
+        PrintUtilities.printComponent(Facture);
+        Imprimer.setVisible(true);
+    }//GEN-LAST:event_ImprimerActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> Caissiers;
     private javax.swing.JLabel Date;
     private javax.swing.JPanel Facture;
+    private javax.swing.JButton Imprimer;
     private javax.swing.JLabel Monnaie;
     private javax.swing.JLabel NCaissier;
     private javax.swing.JLabel NFacture;
@@ -489,5 +549,6 @@ public class Historique extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     private DefaultListModel<String> listModel;
     private DefaultTableModel TableModel;
+    private DefaultComboBoxModel<String> ComboModel;
     public int id_caissier;
 }

@@ -4,6 +4,9 @@ import Main.Parameter;
 import Main.ResultSetTableModel;
 import Main.db_connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -12,22 +15,41 @@ public class Categorie extends javax.swing.JPanel {
 
     Promotion promo = new Promotion();
     db_connection db;
-    ResultSet rs = null;
+    ResultSet rs = null,rst = null;
     
     public Categorie() {
         db = new db_connection(new Parameter().db, new Parameter().nom, new Parameter().pass);
         initComponents();
         setTable();
+        setPromotion();
     }
 
+    public void setInputPromo(){
+        if(promo.valid()!=0){
+            en_promo.setVisible(true);
+        }
+        else{
+            en_promo.setVisible(false);
+        }
+    }
+    
     public boolean valid(){
         if(Nom.getText().length()<2 ){
             JOptionPane.showMessageDialog(this, "Le nom de la categorie doit contenir au minimum 2 caractères");
             return false;
         }
-        else{
-            return true;
+        if(Nom.getText().length()>=2 ){
+            rs = db.querySelectAll("categories", "nom = '"+Nom.getText()+"'");
+            try {
+                while(rs.next()){
+                    JOptionPane.showMessageDialog(this, "Une catégorie possède déjà ce nom, veuillez modifier le nom de la catégorie que vous essayer d'ajouter");
+                    return false;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Produits.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        return true;
     }
     
     public void RechercheModifie(){
@@ -36,8 +58,16 @@ public class Categorie extends javax.swing.JPanel {
         }
         else{
             String etat = "nom LIKE '%" + Recherche.getText() +"%' OR description LIKE '%" + Recherche.getText() +"%'";
-            rs = db.querySelectAll("categories", etat);
-            categories.setModel(new ResultSetTableModel(rs));
+            if(promo.valid()!=0){
+                String[] cols = {"categories.id","categories.nom","description","promotions.nom AS Promotion"};
+                rs = db.fcSelectCommand(cols, "categories LEFT JOIN promotions ON id_promotion = promotions.id",etat);
+                categories.setModel(new ResultSetTableModel(rs));
+            }
+            else{
+                String[] cols = {"id","nom","description"};
+                rs = db.fcSelectCommand(cols, "categories",etat);
+                categories.setModel(new ResultSetTableModel(rs));
+            }
         }
     }
     
@@ -48,6 +78,7 @@ public class Categorie extends javax.swing.JPanel {
         Create.setVisible(false);
         Nom.setText("");
         Description.setText("");
+        en_promo.setVisible(false);
     }
     
     public void ShowCategorie(){
@@ -58,8 +89,48 @@ public class Categorie extends javax.swing.JPanel {
     }
     
     public void setTable(){
-        rs = db.querySelectAll("categories");
-        categories.setModel(new ResultSetTableModel(rs));
+        if(promo.valid()!=0){
+            String[] cols = {"categories.id","categories.nom","description","promotions.nom AS Promotion"};
+            rs = db.querySelect(cols, "categories LEFT JOIN promotions ON id_promotion = promotions.id");
+            categories.setModel(new ResultSetTableModel(rs));
+        }
+        else{
+            String[] cols = {"id","nom","description"};
+            rs = db.querySelect(cols, "categories");
+            categories.setModel(new ResultSetTableModel(rs));
+        }
+    }
+    
+    public void setPromotion(){
+        rs = db.executionQuery("SELECT id FROM categories");
+        try {
+            while(rs.next()){
+                boolean en_promo = false;
+                int id = rs.getInt("id"),id_promo=0;
+                rst = db.querySelectAll("produits JOIN categories ON id_categorie = categories.id");
+                while(rst.next()){
+                    if(rst.getInt("id_categorie") == id){
+                        if(rst.getString("id_promotion")!= null){
+                            en_promo = true;
+                            id_promo = rst.getInt("id_promotion");
+                        }
+                        else{
+                            en_promo = false;
+                            break ;
+                        }
+                    }
+                }
+                if(en_promo){
+                    System.out.println(db.executionUpdate("UPDATE categories SET id_promotion = "+Integer.toString(id_promo)+" WHERE id = "+Integer.toString(id)));
+                }
+                else{
+                    System.out.println(db.executionUpdate("UPDATE categories SET id_promotion = NULL WHERE id = "+Integer.toString(id)));
+                }
+            }
+            setTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(Categorie.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -112,6 +183,8 @@ public class Categorie extends javax.swing.JPanel {
         jLabel6.setForeground(new java.awt.Color(255, 0, 102));
         jLabel6.setText("Nom                : ");
         jPanel2.add(jLabel6);
+
+        Nom.setForeground(new java.awt.Color(0, 102, 102));
         jPanel2.add(Nom);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -123,6 +196,7 @@ public class Categorie extends javax.swing.JPanel {
         jPanel3.add(jLabel7);
 
         Description.setColumns(20);
+        Description.setForeground(new java.awt.Color(0, 102, 102));
         Description.setRows(5);
         jScrollPane2.setViewportView(Description);
 
@@ -140,6 +214,7 @@ public class Categorie extends javax.swing.JPanel {
             }
         });
         jPanel4.add(Modifier);
+        Modifier.setVisible(false);
 
         Ajouter.setBackground(new java.awt.Color(0, 204, 51));
         Ajouter.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -162,6 +237,7 @@ public class Categorie extends javax.swing.JPanel {
             }
         });
         jPanel4.add(Supprimer);
+        Supprimer.setVisible(false);
 
         en_promo.setBackground(new java.awt.Color(255, 255, 255));
         en_promo.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
@@ -206,12 +282,7 @@ public class Categorie extends javax.swing.JPanel {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        if(promo.valid()!=0){
-            en_promo.setVisible(true);
-        }
-        else{
-            en_promo.setVisible(false);
-        }
+        en_promo.setVisible(false);
 
         add(jPanel1);
 
@@ -232,12 +303,13 @@ public class Categorie extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(9, 52, 0, 0);
         jPanel5.add(jLabel8, gridBagConstraints);
 
+        categories.setForeground(new java.awt.Color(0, 102, 102));
         categories.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "id", "Nom", "Description", "En promotion"
+                "id", "Nom", "Description", "Promotion"
             }
         ));
         categories.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -275,7 +347,9 @@ public class Categorie extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 0);
         jPanel5.add(Create, gridBagConstraints);
+        Create.setVisible(false);
 
+        Recherche.setForeground(new java.awt.Color(0, 102, 102));
         Recherche.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RechercheActionPerformed(evt);
@@ -318,12 +392,20 @@ public class Categorie extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void SupprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerActionPerformed
-        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cette promotion ??",
-            "Suppression de fournisseur", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+        if(JOptionPane.showConfirmDialog(this, "Etes vous sûr de vouloir supprimer cette catégorie ??",
+            "Suppression de catégorie", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+            rs = db.querySelectAll("produits", "id_categorie = '"+categories.getValueAt(categories.getSelectedRow(), 0).toString()+"'");
+            try {
+                while(rs.next()){
+                    JOptionPane.showMessageDialog(this, "Avant de pouvoir supprimer cette catégorie , vous devez modifier la catégorie des produits qui possède déjà cette catégorie car chaque produits doit obligatoirement avoir une carégorie", "Suppression impossible", JOptionPane.ERROR_MESSAGE);
+                    return ;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Categorie.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.println(db.queryDelete("categories", "id='"+categories.getValueAt(categories.getSelectedRow(), 0)+"'"));
             setTable();
             CreateCategorie();
-            setTable();
         }
     }//GEN-LAST:event_SupprimerActionPerformed
 
@@ -333,13 +415,13 @@ public class Categorie extends javax.swing.JPanel {
 
     private void AjouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjouterActionPerformed
         if(valid()){
-            String[] cols = {"nom","description","en_promotion"};
+            String[] cols = {"nom","description","id_promotion"};
             if(en_promo.isSelected()){
-                String[] vals = {Nom.getText(),Description.getText(),"1"};
+                String[] vals = {Nom.getText(),Description.getText(),Integer.toString(promo.valid())};
                 System.out.println(db.queryInsert("categories", cols, vals));
             }
             else{
-                String[] vals = {Nom.getText(),Description.getText(),"0"};
+                String[] vals = {Nom.getText(),Description.getText(),"NULL"};
                 System.out.println(db.queryInsert("categories", cols, vals));
             }
             CreateCategorie();
@@ -350,31 +432,44 @@ public class Categorie extends javax.swing.JPanel {
     private void categoriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categoriesMouseClicked
         int i = categories.getSelectedRow();
         ShowCategorie();
+        setInputPromo();
         Nom.setText(categories.getValueAt(i, 1).toString());
         Description.setText(categories.getValueAt(i, 2).toString());
-        if(categories.getValueAt(i, 3).equals(1)){
-            en_promo.setSelected(true);
+        if(promo.valid()!=0){
+            if(!(categories.getValueAt(i, 3)==null)){
+                en_promo.setSelected(true);
+            }
+            else{
+                en_promo.setSelected(false);
+            }
         }
-        else{
-            en_promo.setSelected(false);
-        }
-        
     }//GEN-LAST:event_categoriesMouseClicked
 
     private void ModifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierActionPerformed
-        if(valid()){
-            String[] cols = {"nom","description","en_promotion"};
-            if(en_promo.isSelected()){
-                String[] vals = {Nom.getText(),Description.getText(),"1"};
-                System.out.println(db.queryUpdate("categories", cols, vals, categories.getValueAt(categories.getSelectedRow(), 0).toString()));
-            }
-            else{
-                String[] vals = {Nom.getText(),Description.getText(),"0"};
-                System.out.println(db.queryUpdate("categories", cols, vals, categories.getValueAt(categories.getSelectedRow(), 0).toString()));
-            }
-            CreateCategorie();
+        if(Nom.getText().length()<2 ){
+            JOptionPane.showMessageDialog(this, "Le nom de la categorie doit contenir au minimum 2 caractères");
+            return ;
+        }
+        String[] cols = {"nom","description","id_promotion"};
+        int id = categories.getSelectedRow(),id_promo = promo.valid();
+        if(en_promo.isSelected()){
+            promo.delPromotion();
+            String[] vals = {Nom.getText(),Description.getText(),Integer.toString(id_promo)};
+            System.out.println(db.queryUpdate("categories", cols, vals,"id="+ categories.getValueAt(id, 0).toString()));
+            System.out.println(db.executionUpdate("UPDATE produits JOIN categories ON id_categorie = categories.id SET produits.id_promotion = "+Integer.toString(id_promo)+" WHERE id_categorie="+ categories.getValueAt(id, 0).toString()));
+            promo.setPromotion();
             setTable();
         }
+        else{
+            promo.delPromotion();
+            String[] vals = {Nom.getText(),Description.getText(),"NULL"};
+            System.out.println(db.queryUpdate("categories", cols, vals,"id = '"+ categories.getValueAt(id, 0).toString()+"'"));
+            System.out.println(db.executionUpdate("UPDATE produits JOIN categories ON id_categorie = categories.id SET produits.id_promotion = NULL WHERE id_categorie="+ categories.getValueAt(id, 0).toString()));
+            promo.setPromotion();
+            setTable();
+        }
+        CreateCategorie();
+        setTable();
     }//GEN-LAST:event_ModifierActionPerformed
 
     private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
@@ -394,7 +489,7 @@ public class Categorie extends javax.swing.JPanel {
     private javax.swing.JTextField Nom;
     private javax.swing.JTextField Recherche;
     private javax.swing.JButton Supprimer;
-    private javax.swing.JTable categories;
+    public javax.swing.JTable categories;
     private javax.swing.JCheckBox en_promo;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel6;
